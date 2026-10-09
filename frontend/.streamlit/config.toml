@@ -1,0 +1,14 @@
+[theme]
+base = "light"
+primaryColor = "#1F6E8C"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F1F5F7"
+textColor = "#1F2A33"
+font = "sans serif"
+
+[server]
+# Matches the backend's default SAWT_MAX_UPLOAD_MB.
+maxUploadSize = 100
+
+[browser]
+gatherUsageStats = false

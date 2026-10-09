@@ -7,6 +7,8 @@ textColor = "#1F2A33"
 font = "sans serif"
 
 [server]
+# Local runs stay on this machine; the Docker image passes --server.address=0.0.0.0.
+address = "localhost"
 # Matches the backend's default SAWT_MAX_UPLOAD_MB.
 maxUploadSize = 100
 

@@ -42,6 +42,10 @@ components constrain it:
 | Turn-taking | Computed from diarization | Gaps, overlaps, interruptions, switch rate |
 | Arabic output | Fixed glossary + [Qwen3-4B-Instruct-2507](https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507) | Consistent Arabic labels, natural Arabic free text |
 
+The audio model writes its analysis in English; the Arabic version comes from the
+translation step. Speaking rate is measured as onset density (syllable-like events per
+second).
+
 The language model describes; the measurements anchor it:
 
 - measured categories fill in values the model could not judge;
@@ -90,6 +94,7 @@ make up    # downloads the models into a Docker volume, then starts api + ui
 Docker on macOS cannot use the Apple GPU, so on a Mac the API runs natively. Voxtral and
 pyannote run on the GPU through PyTorch MPS. Translation runs on
 [Ollama](https://ollama.com), using a 4-bit Qwen3-4B so the models fit in unified memory.
+Ollama serves only the translation model.
 
 ```bash
 make setup                                   # uv environments for backend and frontend
@@ -155,24 +160,6 @@ make lint     # ruff
 
 The services depend on small model interfaces (`AudioLLM`, `TextLLM`, `Diarizer`), so
 the whole pipeline is tested on any laptop and in CI with fake models.
-
-## Limitations
-
-- **Analysis language.** The audio model always writes its analysis in English. Arabic
-  output is a translation of it, not a native Arabic analysis.
-- **Prompt tuning.** The analysis prompt is written and tuned for Arabic speech. English
-  conversations work well in practice, but the prompt still says "Arabic audio".
-- **No transcript.** The audio model reasons over audio directly. Quoted phrases in the
-  output are the model's recollection, not a verbatim transcript.
-- **Diarization.** Heavily overlapping speech and very short turns are where pyannote
-  errs most, and those errors flow into the turn-taking metrics.
-- **Speaking rate.** It is approximated from onset density (syllable-like events per
-  second), not counted from words.
-- **Translation quality.** Through Ollama it uses a 4-bit model: it is faster, but its
-  Arabic is less polished than the full-precision model's.
-- **Ollama scope.** Ollama is used only for translation. We found no evidence of
-  audio-input support in Ollama as of October 2026, so it cannot run Voxtral or
-  pyannote.
 
 ## Citation
 

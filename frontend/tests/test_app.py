@@ -1,5 +1,6 @@
 """Smoke tests: run the real Streamlit script headlessly with the HTTP layer faked."""
 
+import json
 import threading
 from pathlib import Path
 from typing import Any
@@ -193,3 +194,21 @@ def test_api_unreachable_notice(monkeypatch):
     at.run()
     assert not at.exception
     assert t("api_unreachable", "AR").format(API_URL) in _text(at.warning)
+
+
+@pytest.mark.parametrize("lang", ["AR", "EN"])
+def test_renders_real_pipeline_output(monkeypatch, make_response, lang):
+    """A response recorded from the real pipeline (Voxtral + pyannote + Ollama Qwen3) on a synthetic clip."""
+    fixture = Path(__file__).parent / "fixtures" / "real_bilingual_response.json"
+    at = _app(monkeypatch, make_response)
+    at.session_state["lang"] = lang
+    at.session_state["result"] = json.loads(fixture.read_text())
+    at.session_state["file_name"] = "en_dialog.wav"
+    at.run()
+
+    assert not at.exception
+    page = "\n".join(_text(elements) for elements in (at.markdown, at.info, at.warning))
+    for key in ("conv_overview", "speaker_timeline", "speaker_analysis", "prosody_analysis", "interaction_dynamics"):
+        assert t(key, lang) in page
+    assert ("سلبي" if lang == "AR" else "Negative") in [m.value for m in at.metric]
+    assert "__SPK" not in page

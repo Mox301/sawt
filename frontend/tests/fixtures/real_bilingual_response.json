@@ -1,0 +1,726 @@
+{
+ "EN": {
+  "analysis": {
+   "conversation_analysis": {
+    "overall_sentiment": "Negative",
+    "main_topics": [
+     "Internet connection issues",
+     "Customer support"
+    ],
+    "conversation_summary": "The conversation revolves around James Carter's repeated issues with his internet connection, which has dropped five times since morning. He is frustrated and has called support multiple times, including last week. The support representative, Sarah, apologizes for the technician's cancellation and schedules a priority visit for the next morning, offering a month of free service as compensation.",
+    "turning_points": [
+     "James Carter's frustration with the repeated issues",
+     "Sarah's apology and scheduling of a priority visit"
+    ],
+    "conversation_quality": "Coherent",
+    "duration_estimate": "1m 0s"
+   },
+   "speaker_analysis": [
+    {
+     "speaker_id": "speaker_0",
+     "sentiment": "Negative",
+     "speaking_style": "Formal, assertive, calm",
+     "role": "Interviewee",
+     "emotional_state": "Frustrated, disappointed",
+     "characteristic_phrases": [
+      "I'm pretty frustrated",
+      "It's dropped five times since this morning"
+     ],
+     "speaking_time_percentage": "51.2%",
+     "key_contributions": "Describes the repeated connection issues and his frustration"
+    },
+    {
+     "speaker_id": "speaker_1",
+     "sentiment": "Positive",
+     "speaking_style": "Formal, professional, calm",
+     "role": "Support Representative",
+     "emotional_state": "Apologetic, supportive",
+     "characteristic_phrases": [
+      "I'm really sorry to hear that",
+      "I apologize",
+      "I'm going to book a priority visit"
+     ],
+     "speaking_time_percentage": "41.9%",
+     "key_contributions": "Apologizes for the technician's cancellation, schedules a priority visit, and offers compensation"
+    }
+   ],
+   "prosody_analysis": {
+    "overall_pitch": "Medium",
+    "overall_speaking_rate": "Moderate",
+    "overall_energy": "Moderate",
+    "tone_quality": "Formal, professional",
+    "emotional_progression": "Speaker 0's frustration gradually diminishes with Sarah's support",
+    "notable_acoustic_features": [
+     "Clear articulation",
+     "Moderate pitch variation"
+    ],
+    "speaker_prosody_differences": "Speaker 0's pitch is slightly higher due to frustration, while Speaker 1 maintains a steady, calm tone",
+    "prosodic_markers": {
+     "emphasis_usage": "Speaker 0 emphasizes key points like 'five times' and 'frustrated', while Speaker 1 uses pauses to emphasize her actions",
+     "pause_patterns": "Speaker 0 uses pauses to gather thoughts, Speaker 1 uses pauses to emphasize her responses",
+     "intonation_variety": "Moderate"
+    },
+    "quantitative_metrics": {
+     "pitch": {
+      "mean_hz": 194.68515014648438,
+      "range_hz": 321.9549560546875,
+      "std_hz": 65.98588562011719,
+      "category": "High"
+     },
+     "energy": {
+      "mean_db": 0.11077488958835602,
+      "std_db": 0.07126466929912567,
+      "dynamic_range_db": 2.3348312377929688,
+      "category": "High"
+     },
+     "speaking_rate": {
+      "syllables_per_second": 5.718257713173436,
+      "category": "Fast"
+     },
+     "voice_quality": {
+      "spectral_centroid_hz": 1584.210153393085,
+      "spectral_rolloff_hz": 3030.177127518558,
+      "zero_crossing_rate": 0.12289826766304347,
+      "brightness": "Moderate",
+      "type": "Clear/Resonant"
+     }
+    }
+   },
+   "interaction_analysis": {
+    "turn_taking_style": "Smooth",
+    "conversational_balance": "Dominated by Speaker 0",
+    "rapport_level": "High",
+    "cooperation_vs_conflict": "Cooperative",
+    "dominance_pattern": "Speaker 0 initiates the conversation, Speaker 1 responds and facilitates",
+    "engagement_levels": {
+     "speaker_0": "High",
+     "speaker_1": "High"
+    },
+    "interruptions": "None",
+    "conversation_flow": "Logical, with clear purpose and structure",
+    "interaction_quality": "Professional",
+    "turn_taking_details": {
+     "num_turns": 10,
+     "num_speaker_switches": 9,
+     "avg_gap_between_turns_s": 0.42,
+     "transition_speed": "Moderate",
+     "num_overlaps": 0,
+     "overlap_percentage": 0.0,
+     "num_interruptions": 0
+    }
+   },
+   "detailed_analysis": "The conversation between James Carter and Sarah is characterized by a clear structure and professionalism. Speaker 0, expressing frustration over repeated internet connection issues, initiates the conversation. Speaker 1, the support representative, responds empathetically and takes proactive measures to resolve the issue, scheduling a priority visit and offering compensation. The interaction is cooperative, with both speakers contributing effectively to the resolution. The overall tone is formal and professional, with clear communication and mutual respect."
+  },
+  "diarization_info": {
+   "speakers": [
+    "speaker_0",
+    "speaker_1"
+   ],
+   "num_speakers": 2,
+   "segments": [
+    {
+     "speaker": "speaker_0",
+     "start": 0.03096875,
+     "end": 5.0934687499999995,
+     "duration": 5.062499999999999
+    },
+    {
+     "speaker": "speaker_1",
+     "start": 5.5153437499999995,
+     "end": 12.974093750000002,
+     "duration": 7.458750000000002
+    },
+    {
+     "speaker": "speaker_0",
+     "start": 13.395968750000002,
+     "end": 18.93096875,
+     "duration": 5.535
+    },
+    {
+     "speaker": "speaker_1",
+     "start": 19.35284375,
+     "end": 25.05659375,
+     "duration": 5.703749999999999
+    },
+    {
+     "speaker": "speaker_0",
+     "start": 25.47846875,
+     "end": 33.76409375,
+     "duration": 8.285625
+    },
+    {
+     "speaker": "speaker_1",
+     "start": 34.18596875,
+     "end": 38.657843750000005,
+     "duration": 4.471875000000004
+    },
+    {
+     "speaker": "speaker_0",
+     "start": 39.11346875,
+     "end": 45.88034375,
+     "duration": 6.766874999999999
+    },
+    {
+     "speaker": "speaker_1",
+     "start": 46.30221875,
+     "end": 50.21721875,
+     "duration": 3.914999999999999
+    },
+    {
+     "speaker": "speaker_0",
+     "start": 50.571593750000005,
+     "end": 55.80284375,
+     "duration": 5.231249999999996
+    },
+    {
+     "speaker": "speaker_1",
+     "start": 56.22471875,
+     "end": 59.93721875000001,
+     "duration": 3.7125000000000057
+    }
+   ],
+   "statistics": {
+    "speaker_0": {
+     "total_speaking_time": 30.881249999999994,
+     "speaking_time_percentage": 51.18467505345332,
+     "num_turns": 5,
+     "average_turn_duration": 6.176249999999999
+    },
+    "speaker_1": {
+     "total_speaking_time": 25.26187500000001,
+     "speaking_time_percentage": 41.87074237979217,
+     "num_turns": 5,
+     "average_turn_duration": 5.052375000000002
+    }
+   },
+   "timeline": [
+    {
+     "turn_number": 1,
+     "speaker": "speaker_0",
+     "start": 0.03096875,
+     "end": 5.0934687499999995,
+     "duration": 5.062499999999999
+    },
+    {
+     "turn_number": 2,
+     "speaker": "speaker_1",
+     "start": 5.5153437499999995,
+     "end": 12.974093750000002,
+     "duration": 7.458750000000002,
+     "quick_response": true,
+     "gap": 0.421875
+    },
+    {
+     "turn_number": 3,
+     "speaker": "speaker_0",
+     "start": 13.395968750000002,
+     "end": 18.93096875,
+     "duration": 5.535,
+     "quick_response": true,
+     "gap": 0.421875
+    },
+    {
+     "turn_number": 4,
+     "speaker": "speaker_1",
+     "start": 19.35284375,
+     "end": 25.05659375,
+     "duration": 5.703749999999999,
+     "quick_response": true,
+     "gap": 0.421875
+    },
+    {
+     "turn_number": 5,
+     "speaker": "speaker_0",
+     "start": 25.47846875,
+     "end": 33.76409375,
+     "duration": 8.285625,
+     "quick_response": true,
+     "gap": 0.421875
+    },
+    {
+     "turn_number": 6,
+     "speaker": "speaker_1",
+     "start": 34.18596875,
+     "end": 38.657843750000005,
+     "duration": 4.471875000000004,
+     "quick_response": true,
+     "gap": 0.421875
+    },
+    {
+     "turn_number": 7,
+     "speaker": "speaker_0",
+     "start": 39.11346875,
+     "end": 45.88034375,
+     "duration": 6.766874999999999,
+     "quick_response": true,
+     "gap": 0.4556249999999977
+    },
+    {
+     "turn_number": 8,
+     "speaker": "speaker_1",
+     "start": 46.30221875,
+     "end": 50.21721875,
+     "duration": 3.914999999999999,
+     "quick_response": true,
+     "gap": 0.421875
+    },
+    {
+     "turn_number": 9,
+     "speaker": "speaker_0",
+     "start": 50.571593750000005,
+     "end": 55.80284375,
+     "duration": 5.231249999999996,
+     "quick_response": true,
+     "gap": 0.35437500000000455
+    },
+    {
+     "turn_number": 10,
+     "speaker": "speaker_1",
+     "start": 56.22471875,
+     "end": 59.93721875000001,
+     "duration": 3.7125000000000057,
+     "quick_response": true,
+     "gap": 0.421875
+    }
+   ],
+   "total_duration": 60.333,
+   "diarization_method": "pyannote-community-1"
+  },
+  "acoustic_features": {
+   "duration": 60.3330625,
+   "sample_rate": 16000,
+   "pitch_features": {
+    "mean_pitch_hz": 194.68515014648438,
+    "pitch_category": "High",
+    "pitch_variation": "High Variation",
+    "pitch_range_hz": 321.9549560546875,
+    "min_pitch_hz": 79.25975799560547,
+    "max_pitch_hz": 401.2147216796875,
+    "pitch_std_hz": 65.98588562011719,
+    "coefficient_of_variation": 0.3389364182949066
+   },
+   "energy_features": {
+    "mean_energy": 0.11077488958835602,
+    "energy_category": "High",
+    "energy_variation": "High Variation",
+    "energy_std": 0.07126466929912567,
+    "max_energy": 0.25864067673683167,
+    "dynamic_range": 2.3348312377929688
+   },
+   "spectral_features": {
+    "mean_spectral_centroid_hz": 1584.210153393085,
+    "brightness": "Moderate",
+    "mean_spectral_rolloff_hz": 3030.177127518558,
+    "mean_zero_crossing_rate": 0.12289826766304347,
+    "mean_spectral_flatness": 0.07661516964435577,
+    "voice_clarity": "Noisy/Breathy"
+   },
+   "temporal_features": {
+    "estimated_tempo_bpm": 110.29411764705883,
+    "syllables_per_second": 5.718257713173436,
+    "speaking_rate_category": "Fast",
+    "num_detected_onsets": 345,
+    "num_pauses": 34,
+    "mean_pause_duration_s": 0.23900000000000002,
+    "max_pause_duration_s": 0.48
+   },
+   "voice_quality": {
+    "voice_type": "Clear/Resonant",
+    "mean_spectral_contrast": 20.621247492842627,
+    "mfcc_features": [
+     -242.99359130859375,
+     90.73783874511719,
+     -9.914721488952637,
+     25.18836212158203,
+     -8.931529998779297
+    ]
+   },
+   "prosodic_statistics": {
+    "total_duration_s": 60.3330625,
+    "voice_activity_percentage": 73.06468716861082,
+    "silence_percentage": 26.935312831389183,
+    "overall_dynamics": "High",
+    "articulation_clarity": "High"
+   }
+  },
+  "metadata": {
+   "audio_filename": "en_dialog.wav",
+   "processing_timestamp": "2026-10-09T16:28:30+00:00"
+  },
+  "turn_taking_metrics": {
+   "turn_taking_style": "Smooth",
+   "num_turns": 10,
+   "num_speaker_switches": 9,
+   "avg_gap_between_turns_s": 0.42,
+   "num_overlaps": 0,
+   "overlap_percentage": 0.0,
+   "avg_overlap_duration_s": 0,
+   "num_interruptions": 0,
+   "turn_transition_speed": "Moderate",
+   "longest_gap_s": 0.46,
+   "shortest_gap_s": 0.35
+  }
+ },
+ "AR": {
+  "analysis": {
+   "conversation_analysis": {
+    "overall_sentiment": "سلبي",
+    "main_topics": [
+     "مشاكل اتصال الإنترنت",
+     "دعم العملاء"
+    ],
+    "conversation_summary": "المحادثة تدور حول مشاكل جيمس كارتر المتكررة في اتصاله بالإنترنت، الذي انقطع خمس مرات منذ الصباح. هو متوتر واتصل بالدعم أكثر من مرة، بما في ذلك الأسبوع الماضي. الممثلة في الدعم سارا تُظهر اعتذارها عن إلغاء التقني، وتنظم زيارة مميزة في الصباح القادم، وتعطى خدمة مجانية لمدة شهر كتعويض.",
+    "turning_points": [
+     "الإحباط الذي يشعر به جيمس كارتر من المشكلات المتكررة",
+     "اعتذار سارة وتحديد زيارة أولوية"
+    ],
+    "conversation_quality": "متماسك",
+    "duration_estimate": "1 دقيقة 0 ثانية"
+   },
+   "speaker_analysis": [
+    {
+     "speaker_id": "متحدث ٠",
+     "sentiment": "سلبي",
+     "speaking_style": "رسمية، واثقة، هادئة",
+     "role": "الضيف",
+     "emotional_state": "مُضطرب، مُخيب للآمال",
+     "characteristic_phrases": [
+      "أنا متوتر جدًا",
+      "انخفض خمس مرات منذ هذا الصباح"
+     ],
+     "speaking_time_percentage": "51.2%",
+     "key_contributions": "يصف المشكلات المتكررة في الاتصال وانفعاله بسببها"
+    },
+    {
+     "speaker_id": "متحدث ١",
+     "sentiment": "إيجابي",
+     "speaking_style": "رسمي، محترف، مهني",
+     "role": "ممثل الدعم",
+     "emotional_state": "مُستَجِب، مُنَسَّب",
+     "characteristic_phrases": [
+      "أنا أسف جدًا أنني سمعت ذلك",
+      "أنا أعتذر",
+      "سأُحجز زيارة بدرجة أولوية"
+     ],
+     "speaking_time_percentage": "41.9%",
+     "key_contributions": "يُعبِّر عن اعتذاره لانسحاب الفني، ويُخطط لزيارة أولوية، ويُقدّم تعويضًا"
+    }
+   ],
+   "prosody_analysis": {
+    "overall_pitch": "متوسطة",
+    "overall_speaking_rate": "معتدل",
+    "overall_energy": "معتدل",
+    "tone_quality": "رسمي ومحترف",
+    "emotional_progression": "يقل ارتباك سارة تدريجيًا مع دعم سارة",
+    "notable_acoustic_features": [
+     "نطق واضح",
+     "تغير معتدل في نبرة الصوت"
+    ],
+    "speaker_prosody_differences": "نبرة متحدث ٠ أعلى قليلاً بسبب الإحباط، في حين تبقى نبرة متحدث ١ مستقرة ومحفوفة",
+    "prosodic_markers": {
+     "emphasis_usage": "متحدث ٠ تُبرز النقاط المهمة مثل \"خمس مرات\" و\"مُفاجئ\"، بينما متحدث ١ تستخدم التوقفات لتعزيز إجراءاتها",
+     "pause_patterns": "متحدث ٠ تستخدم التوقفات لجمع أفكارها متحدث ١ تستخدم التوقفات للتأكيد على ردودها",
+     "intonation_variety": "معتدل"
+    },
+    "quantitative_metrics": {
+     "pitch": {
+      "mean_hz": 194.68515014648438,
+      "range_hz": 321.9549560546875,
+      "std_hz": 65.98588562011719,
+      "category": "عالية"
+     },
+     "energy": {
+      "mean_db": 0.11077488958835602,
+      "std_db": 0.07126466929912567,
+      "dynamic_range_db": 2.3348312377929688,
+      "category": "عالية"
+     },
+     "speaking_rate": {
+      "syllables_per_second": 5.718257713173436,
+      "category": "سريع"
+     },
+     "voice_quality": {
+      "spectral_centroid_hz": 1584.210153393085,
+      "spectral_rolloff_hz": 3030.177127518558,
+      "zero_crossing_rate": 0.12289826766304347,
+      "brightness": "معتدل",
+      "type": "واضح ورنان"
+     }
+    }
+   },
+   "interaction_analysis": {
+    "turn_taking_style": "سلس",
+    "conversational_balance": "يهيمن عليه متحدث ٠",
+    "rapport_level": "عالية",
+    "cooperation_vs_conflict": "متعاون",
+    "dominance_pattern": "متحدث ٠ يبدأ المحادثة، متحدث ١ يرد ويُسهم",
+    "engagement_levels": {
+     "speaker_0": "عالية",
+     "speaker_1": "عالية"
+    },
+    "interruptions": "لا يوجد",
+    "conversation_flow": "منطقي، مع هدف واضح وبنية منظمة",
+    "interaction_quality": "محترف",
+    "turn_taking_details": {
+     "num_turns": 10,
+     "num_speaker_switches": 9,
+     "avg_gap_between_turns_s": 0.42,
+     "transition_speed": "معتدل",
+     "num_overlaps": 0,
+     "overlap_percentage": 0.0,
+     "num_interruptions": 0
+    }
+   },
+   "detailed_analysis": "المحادثة بين جيمس كارتر وسارة تتميز ببنية واضحة ومهنية. متحدث ٠، الذي يعبر عن إحباطه من تكرار مشاكل الاتصال بالإنترنت، يبدأ المحادثة. متحدث ١، الممثل المعني بالدعم، يستجيب بتعاطف ويُتخذ إجراءات مبكرة لحل المشكلة، ويُجدّد زيارة أولوية ويُقدم تعويضًا. تسير المحادثة بشكل متعاون، حيث يساهم كلا المُتحدثين بشكل فعّال في حل المشكلة. النبرة العامة مهنية ورسمية، مع تواصل واضح واحترام متبادل."
+  },
+  "diarization_info": {
+   "speakers": [
+    "speaker_0",
+    "speaker_1"
+   ],
+   "num_speakers": 2,
+   "segments": [
+    {
+     "speaker": "speaker_0",
+     "start": 0.03096875,
+     "end": 5.0934687499999995,
+     "duration": 5.062499999999999
+    },
+    {
+     "speaker": "speaker_1",
+     "start": 5.5153437499999995,
+     "end": 12.974093750000002,
+     "duration": 7.458750000000002
+    },
+    {
+     "speaker": "speaker_0",
+     "start": 13.395968750000002,
+     "end": 18.93096875,
+     "duration": 5.535
+    },
+    {
+     "speaker": "speaker_1",
+     "start": 19.35284375,
+     "end": 25.05659375,
+     "duration": 5.703749999999999
+    },
+    {
+     "speaker": "speaker_0",
+     "start": 25.47846875,
+     "end": 33.76409375,
+     "duration": 8.285625
+    },
+    {
+     "speaker": "speaker_1",
+     "start": 34.18596875,
+     "end": 38.657843750000005,
+     "duration": 4.471875000000004
+    },
+    {
+     "speaker": "speaker_0",
+     "start": 39.11346875,
+     "end": 45.88034375,
+     "duration": 6.766874999999999
+    },
+    {
+     "speaker": "speaker_1",
+     "start": 46.30221875,
+     "end": 50.21721875,
+     "duration": 3.914999999999999
+    },
+    {
+     "speaker": "speaker_0",
+     "start": 50.571593750000005,
+     "end": 55.80284375,
+     "duration": 5.231249999999996
+    },
+    {
+     "speaker": "speaker_1",
+     "start": 56.22471875,
+     "end": 59.93721875000001,
+     "duration": 3.7125000000000057
+    }
+   ],
+   "statistics": {
+    "speaker_0": {
+     "total_speaking_time": 30.881249999999994,
+     "speaking_time_percentage": 51.18467505345332,
+     "num_turns": 5,
+     "average_turn_duration": 6.176249999999999
+    },
+    "speaker_1": {
+     "total_speaking_time": 25.26187500000001,
+     "speaking_time_percentage": 41.87074237979217,
+     "num_turns": 5,
+     "average_turn_duration": 5.052375000000002
+    }
+   },
+   "timeline": [
+    {
+     "turn_number": 1,
+     "speaker": "speaker_0",
+     "start": 0.03096875,
+     "end": 5.0934687499999995,
+     "duration": 5.062499999999999
+    },
+    {
+     "turn_number": 2,
+     "speaker": "speaker_1",
+     "start": 5.5153437499999995,
+     "end": 12.974093750000002,
+     "duration": 7.458750000000002,
+     "quick_response": true,
+     "gap": 0.421875
+    },
+    {
+     "turn_number": 3,
+     "speaker": "speaker_0",
+     "start": 13.395968750000002,
+     "end": 18.93096875,
+     "duration": 5.535,
+     "quick_response": true,
+     "gap": 0.421875
+    },
+    {
+     "turn_number": 4,
+     "speaker": "speaker_1",
+     "start": 19.35284375,
+     "end": 25.05659375,
+     "duration": 5.703749999999999,
+     "quick_response": true,
+     "gap": 0.421875
+    },
+    {
+     "turn_number": 5,
+     "speaker": "speaker_0",
+     "start": 25.47846875,
+     "end": 33.76409375,
+     "duration": 8.285625,
+     "quick_response": true,
+     "gap": 0.421875
+    },
+    {
+     "turn_number": 6,
+     "speaker": "speaker_1",
+     "start": 34.18596875,
+     "end": 38.657843750000005,
+     "duration": 4.471875000000004,
+     "quick_response": true,
+     "gap": 0.421875
+    },
+    {
+     "turn_number": 7,
+     "speaker": "speaker_0",
+     "start": 39.11346875,
+     "end": 45.88034375,
+     "duration": 6.766874999999999,
+     "quick_response": true,
+     "gap": 0.4556249999999977
+    },
+    {
+     "turn_number": 8,
+     "speaker": "speaker_1",
+     "start": 46.30221875,
+     "end": 50.21721875,
+     "duration": 3.914999999999999,
+     "quick_response": true,
+     "gap": 0.421875
+    },
+    {
+     "turn_number": 9,
+     "speaker": "speaker_0",
+     "start": 50.571593750000005,
+     "end": 55.80284375,
+     "duration": 5.231249999999996,
+     "quick_response": true,
+     "gap": 0.35437500000000455
+    },
+    {
+     "turn_number": 10,
+     "speaker": "speaker_1",
+     "start": 56.22471875,
+     "end": 59.93721875000001,
+     "duration": 3.7125000000000057,
+     "quick_response": true,
+     "gap": 0.421875
+    }
+   ],
+   "total_duration": 60.333,
+   "diarization_method": "pyannote-community-1"
+  },
+  "acoustic_features": {
+   "duration": 60.3330625,
+   "sample_rate": 16000,
+   "pitch_features": {
+    "mean_pitch_hz": 194.68515014648438,
+    "pitch_category": "High",
+    "pitch_variation": "High Variation",
+    "pitch_range_hz": 321.9549560546875,
+    "min_pitch_hz": 79.25975799560547,
+    "max_pitch_hz": 401.2147216796875,
+    "pitch_std_hz": 65.98588562011719,
+    "coefficient_of_variation": 0.3389364182949066
+   },
+   "energy_features": {
+    "mean_energy": 0.11077488958835602,
+    "energy_category": "High",
+    "energy_variation": "High Variation",
+    "energy_std": 0.07126466929912567,
+    "max_energy": 0.25864067673683167,
+    "dynamic_range": 2.3348312377929688
+   },
+   "spectral_features": {
+    "mean_spectral_centroid_hz": 1584.210153393085,
+    "brightness": "Moderate",
+    "mean_spectral_rolloff_hz": 3030.177127518558,
+    "mean_zero_crossing_rate": 0.12289826766304347,
+    "mean_spectral_flatness": 0.07661516964435577,
+    "voice_clarity": "Noisy/Breathy"
+   },
+   "temporal_features": {
+    "estimated_tempo_bpm": 110.29411764705883,
+    "syllables_per_second": 5.718257713173436,
+    "speaking_rate_category": "Fast",
+    "num_detected_onsets": 345,
+    "num_pauses": 34,
+    "mean_pause_duration_s": 0.23900000000000002,
+    "max_pause_duration_s": 0.48
+   },
+   "voice_quality": {
+    "voice_type": "Clear/Resonant",
+    "mean_spectral_contrast": 20.621247492842627,
+    "mfcc_features": [
+     -242.99359130859375,
+     90.73783874511719,
+     -9.914721488952637,
+     25.18836212158203,
+     -8.931529998779297
+    ]
+   },
+   "prosodic_statistics": {
+    "total_duration_s": 60.3330625,
+    "voice_activity_percentage": 73.06468716861082,
+    "silence_percentage": 26.935312831389183,
+    "overall_dynamics": "High",
+    "articulation_clarity": "High"
+   }
+  },
+  "metadata": {
+   "audio_filename": "en_dialog.wav",
+   "processing_timestamp": "2026-10-09T16:28:30+00:00"
+  },
+  "turn_taking_metrics": {
+   "turn_taking_style": "سلس",
+   "num_turns": 10,
+   "num_speaker_switches": 9,
+   "avg_gap_between_turns_s": 0.42,
+   "num_overlaps": 0,
+   "overlap_percentage": 0.0,
+   "avg_overlap_duration_s": 0,
+   "num_interruptions": 0,
+   "turn_transition_speed": "معتدل",
+   "longest_gap_s": 0.46,
+   "shortest_gap_s": 0.35
+  }
+ }
+}

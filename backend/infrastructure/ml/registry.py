@@ -42,12 +42,19 @@ class ModelRegistry:
         }
 
     def load_all(self) -> None:
-        # Imported lazily so the API can start (and tests run) without torch installed.
-        from backend.infrastructure.ml.device import attention_implementation, resolve_device, resolve_dtype
-
         s = self.settings
-        self.device = resolve_device(s.device)
-        dtype = resolve_dtype(self.device, s.dtype)
+        try:
+            # Imported lazily so the API can start (and tests run) without torch installed.
+            from backend.infrastructure.ml.device import attention_implementation, resolve_device, resolve_dtype
+
+            self.device = resolve_device(s.device)
+            dtype = resolve_dtype(self.device, s.dtype)
+        except Exception as e:
+            logger.exception("Could not set up the model runtime")
+            for status in self.status.values():
+                if status.state == "pending":
+                    status.state, status.error = "failed", str(e)
+            return
         logger.info("Loading models on %s (%s)", self.device, dtype)
 
         def load_voxtral():

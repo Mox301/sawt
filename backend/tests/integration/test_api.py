@@ -1,3 +1,9 @@
+import sys
+
+from fastapi.testclient import TestClient
+
+from backend.infrastructure.ml.registry import ModelRegistry
+from backend.main import create_app
 from backend.tests.fakes import FakeAudioLLM
 
 
@@ -57,3 +63,13 @@ def test_errors(make_client, client, dialogue_wav):
 
 def test_root_points_to_docs_and_health(client):
     assert client.get("/").json()["health"] == "/api/v1/health"
+
+
+def test_health_reports_unavailable_when_torch_is_missing(settings, monkeypatch):
+    monkeypatch.setitem(sys.modules, "torch", None)
+    monkeypatch.delitem(sys.modules, "backend.infrastructure.ml.device", raising=False)
+    with TestClient(create_app(settings, ModelRegistry(settings), load_in_background=False)) as client:
+        body = client.get("/api/v1/health").json()
+    assert body["status"] == "unavailable"
+    assert body["models"]["audio_llm"]["state"] == "failed"
+    assert "torch" in body["models"]["audio_llm"]["error"]

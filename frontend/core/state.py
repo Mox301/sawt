@@ -61,12 +61,11 @@ def finish_analysis(job: Job) -> None:
     except Exception as exc:  # The client returns error dicts; this keeps a bug from wedging the session.
         response = {"error": "Request Failed", "message": str(exc)}
     failed = "error" in response
-    st.session_state.update(
-        job=None,
-        result=None if failed else response,
-        file_name=None if failed else job.file_name,
-        outcome=Outcome(job.elapsed_s, response if failed else None),
-    )
+    st.session_state["result"] = None if failed else response
+    st.session_state["file_name"] = None if failed else job.file_name
+    st.session_state["outcome"] = Outcome(job.elapsed_s, response if failed else None)
+    # Last: each write can raise a rerun request. One that lands earlier leaves the job for the next run to finish.
+    st.session_state["job"] = None
 
 
 def result() -> dict[str, Any] | None:

@@ -128,6 +128,9 @@ def test_pending_analysis_survives_a_language_switch(monkeypatch, make_response,
     try:
         at.button(key="analyze").click().run()
         assert at.button(key="analyze").disabled
+        # A daemon thread, so stopping the UI does not wait for the request.
+        (worker,) = [thread for thread in threading.enumerate() if thread.name == "sawt-analysis"]
+        assert worker.daemon
         at.radio(key="lang").set_value("EN").run()
 
         assert not at.exception
@@ -151,7 +154,10 @@ def test_pending_analysis_survives_a_language_switch(monkeypatch, make_response,
 
 
 def test_a_failing_job_ends_with_an_error(monkeypatch, make_response):
+    release = threading.Event()
+
     def broken_post(url: str, **kwargs: Any) -> requests.Response:
+        release.wait(timeout=10)
         raise RuntimeError("boom")
 
     monkeypatch.setattr(requests, "post", broken_post)
@@ -160,7 +166,9 @@ def test_a_failing_job_ends_with_an_error(monkeypatch, make_response):
     at.run()
     at.file_uploader(key="audio").set_value(("call.wav", b"RIFF", "audio/wav")).run()
     at.button(key="analyze").click().run()
-    at.session_state["job"].future.exception(timeout=10)
+    job = at.session_state["job"]
+    release.set()
+    job.future.exception(timeout=10)
     at.run()
 
     assert not at.exception

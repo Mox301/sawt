@@ -3,7 +3,8 @@
 Run from the repository root:  PYTHONPATH=. streamlit run frontend/app.py
 """
 
-from concurrent.futures import ThreadPoolExecutor
+import threading
+from concurrent.futures import Future
 from typing import Any
 
 import streamlit as st
@@ -28,10 +29,21 @@ def fetch_health() -> dict[str, Any]:
     return client.get_health()
 
 
-@st.cache_resource
-def analysis_executor() -> ThreadPoolExecutor:
-    """Runs analysis requests off the script thread, so a rerun cannot interrupt (and repeat) them."""
-    return ThreadPoolExecutor(thread_name_prefix="sawt-analysis")
+def submit_analysis(uploaded: UploadedFile, translate: bool) -> Future[dict[str, Any]]:
+    """Run the analysis request off the script thread, so a rerun cannot interrupt (and repeat) it."""
+    future: Future[dict[str, Any]] = Future()
+    audio, name, content_type = uploaded.getvalue(), uploaded.name, uploaded.type
+
+    def run() -> None:
+        try:
+            future.set_result(client.analyze_conversation(audio, name, translate=translate, content_type=content_type))
+        except Exception as exc:
+            future.set_exception(exc)
+
+    # A daemon thread, not a ThreadPoolExecutor: interpreter exit joins executor workers, so Ctrl+C or SIGTERM
+    # would wait for the request (up to ANALYSIS_TIMEOUT_S). A daemon thread dies with the process.
+    threading.Thread(target=run, name="sawt-analysis", daemon=True).start()
+    return future
 
 
 def render_header(lang: Lang) -> None:
@@ -58,14 +70,7 @@ def render_analysis(uploaded: UploadedFile, translate: bool, lang: Lang) -> None
         t("analyze_btn", lang), type="primary", use_container_width=True, disabled=state.is_analyzing(), key="analyze"
     )
     if clicked:
-        future = analysis_executor().submit(
-            client.analyze_conversation,
-            uploaded.getvalue(),
-            uploaded.name,
-            translate=translate,
-            content_type=uploaded.type,
-        )
-        state.start_analysis(future, uploaded.name)
+        state.start_analysis(submit_analysis(uploaded, translate), uploaded.name)
         st.rerun()
 
 

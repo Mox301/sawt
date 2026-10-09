@@ -54,6 +54,31 @@ def test_arabic_hides_fields_whose_english_twin_is_a_placeholder(placeholder_res
     assert placeholder_response == original
 
 
+def test_arabic_keeps_a_field_whose_english_twin_its_component_shows(placeholder_response):
+    # speakers.py hides speaking_style only when it is "Not described", so the English view shows "Unknown".
+    placeholder_response["EN"]["analysis"]["speaker_analysis"][0]["speaking_style"] = "Unknown"
+    placeholder_response["AR"]["analysis"]["speaker_analysis"][0]["speaking_style"] = "غير معروف"
+    # dynamics.py hides conversational_balance only when it is "Unknown".
+    placeholder_response["EN"]["analysis"]["interaction_analysis"]["conversational_balance"] = "Not described"
+    placeholder_response["AR"]["analysis"]["interaction_analysis"]["conversational_balance"] = "غير موصوف"
+
+    arabic = parse_result(placeholder_response, "AR")
+
+    assert arabic.speakers[0]["speaking_style"] == "غير معروف"
+    assert arabic.interaction["conversational_balance"] == "غير موصوف"
+
+
+def test_arabic_keeps_speakers_that_cannot_be_paired(placeholder_response):
+    arabic_speakers = placeholder_response["AR"]["analysis"]["speaker_analysis"]
+    arabic_speakers.pop(0)
+
+    arabic = parse_result(placeholder_response, "AR")
+
+    assert arabic.speakers == arabic_speakers
+    assert arabic.detailed_analysis == ""
+    assert arabic.interaction["dominance_pattern"] == ""
+
+
 def test_english_keeps_its_placeholders_for_the_components_to_hide(placeholder_response):
     english = parse_result(placeholder_response, "EN")
     assert english.detailed_analysis == ""

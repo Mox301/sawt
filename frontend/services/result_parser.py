@@ -11,11 +11,19 @@ from typing import Any
 from frontend.core.i18n import Lang
 
 NO_DETAILED_ANALYSIS = "No detailed analysis provided."
-_PLACEHOLDERS = frozenset({"Unknown", "Not described", "Not specified", NO_DETAILED_ANALYSIS})
 
-# Text fields the components hide when they hold an (English) placeholder.
-_HIDDEN_SPEAKER_FIELDS = ("speaking_style", "emotional_state", "key_contributions")
-_HIDDEN_INTERACTION_FIELDS = ("conversational_balance", "interruptions", "dominance_pattern")
+# Text fields the views hide, each with the (English) placeholder its component checks for.
+_HIDDEN_ANALYSIS_FIELDS = {"detailed_analysis": NO_DETAILED_ANALYSIS}
+_HIDDEN_SPEAKER_FIELDS = {
+    "speaking_style": "Not described",
+    "emotional_state": "Not described",
+    "key_contributions": "Not specified",
+}
+_HIDDEN_INTERACTION_FIELDS = {
+    "conversational_balance": "Unknown",
+    "interruptions": "Unknown",
+    "dominance_pattern": "Not described",
+}
 
 
 @dataclass(frozen=True)
@@ -59,17 +67,24 @@ def _hide_translated_placeholders(arabic: dict[str, Any], english: dict[str, Any
     """Blank Arabic fields whose English twin is a placeholder, so both views hide the same fields.
 
     Translated placeholders never match the English strings the components compare against.
-    Translation keeps list order, so speakers pair up by position. Returns a copy; ``arabic`` is untouched.
+    Translation keeps list order, so speakers pair up by position; lists of different lengths cannot be
+    paired and are kept as they are. Returns a copy; ``arabic`` is untouched.
     """
-    speakers = zip(arabic.get("speaker_analysis", []), english.get("speaker_analysis", []), strict=True)
+    speakers = arabic.get("speaker_analysis", [])
+    english_speakers = english.get("speaker_analysis", [])
+    if len(speakers) == len(english_speakers):
+        speakers = [
+            _blank_placeholders(ar, en, _HIDDEN_SPEAKER_FIELDS)
+            for ar, en in zip(speakers, english_speakers, strict=True)
+        ]
     return {
-        **_blank_placeholders(arabic, english, ("detailed_analysis",)),
-        "speaker_analysis": [_blank_placeholders(ar, en, _HIDDEN_SPEAKER_FIELDS) for ar, en in speakers],
+        **_blank_placeholders(arabic, english, _HIDDEN_ANALYSIS_FIELDS),
+        "speaker_analysis": speakers,
         "interaction_analysis": _blank_placeholders(
             arabic.get("interaction_analysis", {}), english.get("interaction_analysis", {}), _HIDDEN_INTERACTION_FIELDS
         ),
     }
 
 
-def _blank_placeholders(arabic: dict[str, Any], english: dict[str, Any], keys: tuple[str, ...]) -> dict[str, Any]:
-    return {**arabic, **{key: "" for key in keys if english.get(key) in _PLACEHOLDERS}}
+def _blank_placeholders(arabic: dict[str, Any], english: dict[str, Any], hidden: dict[str, str]) -> dict[str, Any]:
+    return {**arabic, **{key: "" for key, placeholder in hidden.items() if english.get(key) == placeholder}}

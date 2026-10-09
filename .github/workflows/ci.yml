@@ -33,3 +33,6 @@ jobs:
       - name: Example client tests
         if: matrix.service == 'backend'
         run: uv run --project backend pytest examples -q
+      - name: Example client tests
+        if: matrix.service == 'backend'
+        run: uv run --project backend pytest examples -q

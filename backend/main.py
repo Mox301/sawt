@@ -12,6 +12,7 @@ from fastapi import FastAPI
 
 from backend import __version__
 from backend.api.errors import register_error_handlers
+from backend.api.middleware import BodySizeLimitMiddleware
 from backend.api.routes import conversations, health
 from backend.container import Container
 from backend.core.config import Settings, get_settings
@@ -52,6 +53,7 @@ def create_app(
         lifespan=lifespan,
     )
     app.state.container = container
+    app.add_middleware(BodySizeLimitMiddleware, max_upload_bytes=settings.max_upload_bytes)
     register_error_handlers(app)
     app.include_router(health.router)
     app.include_router(conversations.router)

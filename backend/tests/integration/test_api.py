@@ -1,3 +1,5 @@
+import asyncio
+import json
 import sys
 
 from fastapi.testclient import TestClient
@@ -56,6 +58,9 @@ def test_errors(make_client, client, dialogue_wav):
     assert client.post("/api/v1/conversations/analyze", files={"audio": ("a.wav", b"garbage")}).status_code == 422
     too_big = dialogue_wav + b"\0" * (1024 * 1024)
     assert client.post("/api/v1/conversations/analyze", files={"audio": ("a.wav", too_big)}).status_code == 413
+    # Within the multipart allowance of the body limit, so the route's own per-file check rejects it.
+    just_over = b"\0" * (1024 * 1024 + 1)
+    assert client.post("/api/v1/conversations/analyze", files={"audio": ("a.wav", just_over)}).status_code == 413
 
     broken = make_client(fail_audio=True)
     assert broken.get("/api/v1/health").json()["status"] == "unavailable"
@@ -72,6 +77,51 @@ def test_audio_longer_than_the_limit_is_rejected(settings, make_client):
     response = client.post("/api/v1/conversations/analyze", files={"audio": ("a.wav", wav_bytes(tone(200, 61)))})
     assert response.status_code == 413
     assert response.json() == {"detail": "Audio longer than 1 minutes"}
+
+
+def test_declared_body_over_the_limit_is_rejected_before_reading(client):
+    response = client.post(
+        "/api/v1/conversations/analyze",
+        content=b"tiny",
+        headers={"content-type": "multipart/form-data; boundary=B", "content-length": str(2 * 1024 * 1024)},
+    )
+    assert response.status_code == 413
+    assert response.json() == {"detail": "Upload exceeds 1 MB"}
+
+
+def test_streamed_body_stops_at_the_limit(client):
+    """A chunked upload has no Content-Length: the body is counted as it arrives."""
+    head = b'--B\r\nContent-Disposition: form-data; name="audio"; filename="a.wav"\r\n\r\n'
+    chunks = [head] + [b"\0" * 64 * 1024] * 40  # 2.5 MB against a 1 MB limit
+    pulled, sent = 0, []
+
+    async def receive():
+        nonlocal pulled
+        pulled += 1
+        return {"type": "http.request", "body": chunks[pulled - 1], "more_body": pulled < len(chunks)}
+
+    async def send(message):
+        sent.append(message)
+
+    scope = {
+        "type": "http",
+        "asgi": {"version": "3.0"},
+        "http_version": "1.1",
+        "method": "POST",
+        "scheme": "http",
+        "path": "/api/v1/conversations/analyze",
+        "raw_path": b"/api/v1/conversations/analyze",
+        "root_path": "",
+        "query_string": b"",
+        "headers": [(b"content-type", b"multipart/form-data; boundary=B")],
+        "client": ("test", 1),
+        "server": ("test", 80),
+    }
+    asyncio.run(client.app(scope, receive, send))
+
+    assert sent[0]["status"] == 413
+    assert json.loads(sent[1]["body"]) == {"detail": "Upload exceeds 1 MB"}
+    assert pulled < len(chunks)
 
 
 def test_health_reports_unavailable_when_torch_is_missing(settings, monkeypatch):

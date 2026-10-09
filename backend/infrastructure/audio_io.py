@@ -49,7 +49,7 @@ class PreparedAudio:
         return round(1000 * len(self.waveform) / self.sample_rate) / 1000.0
 
 
-def decode(data: bytes, max_seconds: int) -> AudioSegment:
+def decode(data: bytes, max_seconds: float) -> AudioSegment:
     """Decode any FFmpeg-readable audio of at most ``max_seconds`` into a 16 kHz mono segment."""
     probe = ["ffprobe", "-v", "error", *_PIPE_INPUT, "-show_entries", "stream=codec_type,channels,sample_rate"]
     streams = json.loads(_run([*probe, "-of", "json"], data)).get("streams", [])

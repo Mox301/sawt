@@ -111,3 +111,10 @@ def test_session_limiter():
         pass
     with limiter.slot():
         assert limiter.active == 1
+
+
+def test_stream_duration_limit_reports_the_session_limit():
+    session = StreamSession(translate=False, max_bytes=10_000_000, max_seconds=1)
+    session.add_chunk(wav_bytes(tone(200, 0.8)))
+    with pytest.raises(PayloadTooLargeError, match="longer than 0.0166667 minutes"):
+        session.add_chunk(wav_bytes(tone(200, 0.8)))

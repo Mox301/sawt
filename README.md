@@ -106,10 +106,16 @@ make up-cpu    # translation via Ollama on the host; give Docker Desktop ≥ 14 
 ```
 
 The image builds for linux/amd64 and linux/arm64 (Apple Silicon, ARM servers). On Linux
-with Docker Engine, Ollama listens on 127.0.0.1 only, so the container cannot reach it:
-set `OLLAMA_HOST=0.0.0.0` (`sudo systemctl edit ollama` →
-`Environment=OLLAMA_HOST=0.0.0.0`), or run translation in the container with
-`SAWT_TRANSLATION_BACKEND=transformers`.
+with Docker Engine, Ollama listens on 127.0.0.1 only, so the container cannot reach it.
+Either run translation in the container with `SAWT_TRANSLATION_BACKEND=transformers`, or let
+Ollama listen on all interfaces:
+
+```bash
+sudo systemctl edit ollama      # add:  [Service]  Environment="OLLAMA_HOST=0.0.0.0"
+sudo systemctl restart ollama
+```
+
+Ollama has no authentication, so keep port 11434 closed to other machines.
 
 ## API
 

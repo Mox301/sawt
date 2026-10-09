@@ -91,7 +91,7 @@ frontend that calls it over HTTP.
 |---|---|---|
 | `ModelNotReadyError` | 503 | Models are still loading or the audio model failed |
 | `AudioDecodeError` | 422 | The upload is not decodable audio, or is empty |
-| `PayloadTooLargeError` | 413 | Upload or stream exceeds the size limit |
+| `PayloadTooLargeError` | 413 | Upload or stream exceeds the size limit, or the audio exceeds `SAWT_MAX_AUDIO_MINUTES` |
 | `TooManySessionsError` | 429 | All streaming slots are in use |
 | `StreamProtocolError` | 400 | Unexpected WebSocket message or idle timeout |
 

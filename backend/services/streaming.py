@@ -31,9 +31,15 @@ class StreamSession:
         self.last_activity = time.monotonic()
         if self.received_bytes + len(data) > self.max_bytes:
             raise PayloadTooLargeError(f"Stream exceeds {self.max_bytes // (1024 * 1024)} MB")
-        chunk = decode(data, self.max_seconds)
+        too_long = PayloadTooLargeError(f"Audio longer than {self.max_seconds / 60:g} minutes")
+        # Decode at most the remaining budget (+1 s), so a nearly full session can't decode a full-length chunk.
+        remaining_s = max(self.max_seconds - len(self.audio) / 1000, 0)
+        try:
+            chunk = decode(data, remaining_s)
+        except PayloadTooLargeError:
+            raise too_long from None
         if len(self.audio) + len(chunk) > self.max_seconds * 1000:
-            raise PayloadTooLargeError(f"Audio longer than {self.max_seconds / 60:g} minutes")
+            raise too_long
         self.audio += chunk
         self.received_bytes += len(data)
         self.chunks += 1

@@ -36,6 +36,8 @@ class Settings(BaseSettings):
 
     # Limits
     max_upload_mb: int = 100
+    # Voxtral-Mini's documented limit for audio understanding.
+    max_audio_minutes: int = 40
     stream_max_sessions: int = 10
     stream_idle_timeout_s: int = 300
 
@@ -44,6 +46,10 @@ class Settings(BaseSettings):
     @property
     def max_upload_bytes(self) -> int:
         return self.max_upload_mb * 1024 * 1024
+
+    @property
+    def max_audio_seconds(self) -> int:
+        return self.max_audio_minutes * 60
 
 
 @lru_cache

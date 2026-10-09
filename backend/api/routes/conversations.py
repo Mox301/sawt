@@ -12,14 +12,14 @@ from backend.api.errors import status_code_for
 from backend.api.schemas import AnalysisResponse, ErrorResponse, StreamEnd, StreamStart
 from backend.container import Container
 from backend.core.exceptions import ModelNotReadyError, PayloadTooLargeError, SawtError, StreamProtocolError
-from backend.infrastructure.audio_io import prepared_audio
+from backend.infrastructure.audio_io import decode, prepared_audio
 from backend.services.streaming import StreamSession
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/conversations", tags=["conversations"])
 
 ERRORS = {
-    413: {"model": ErrorResponse, "description": "Upload exceeds SAWT_MAX_UPLOAD_MB"},
+    413: {"model": ErrorResponse, "description": "Upload exceeds SAWT_MAX_UPLOAD_MB or SAWT_MAX_AUDIO_MINUTES"},
     422: {"model": ErrorResponse, "description": "File could not be decoded as audio"},
     503: {"model": ErrorResponse, "description": "Models are still loading"},
 }
@@ -40,7 +40,7 @@ async def analyze(
     filename = audio.filename or "upload"
 
     def run():
-        with prepared_audio(data) as prepared:
+        with prepared_audio(decode(data, container.settings.max_audio_seconds)) as prepared:
             return container.conversation.analyze(prepared, filename, translate)
 
     return await container.gate.run(run)
@@ -80,7 +80,7 @@ async def _run_session(websocket: WebSocket, container: Container) -> None:
     timeout = settings.stream_idle_timeout_s
 
     start = _parse(await _receive(websocket, timeout), StreamStart)
-    session = StreamSession(start.translate, settings.max_upload_bytes)
+    session = StreamSession(start.translate, settings.max_upload_bytes, settings.max_audio_seconds)
     await websocket.send_json({"type": "started", "session_id": session.session_id})
 
     while True:

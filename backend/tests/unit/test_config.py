@@ -12,9 +12,10 @@ from backend.infrastructure.ml.registry import ModelRegistry
 def test_hf_token_is_read_from_the_env_file(tmp_path, monkeypatch, line, expected):
     monkeypatch.delenv("HF_TOKEN", raising=False)
     env_file = tmp_path / ".env"
-    env_file.write_text(f"{line}\n")
+    env_file.write_text(f"{line}\nSAWT_MAX_AUDIO_MINUTES=5\n")
     settings = Settings(_env_file=env_file)
     assert settings.hf_token == expected
+    assert settings.max_audio_seconds == 300
     assert "hf_abc" not in repr(settings)
 
 

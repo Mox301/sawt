@@ -4,6 +4,7 @@ from fastapi.testclient import TestClient
 
 from backend.infrastructure.ml.registry import ModelRegistry
 from backend.main import create_app
+from backend.tests.conftest import tone, wav_bytes
 from backend.tests.fakes import FakeAudioLLM
 
 
@@ -63,6 +64,14 @@ def test_errors(make_client, client, dialogue_wav):
 
 def test_root_points_to_docs_and_health(client):
     assert client.get("/").json()["health"] == "/api/v1/health"
+
+
+def test_audio_longer_than_the_limit_is_rejected(settings, make_client):
+    settings.max_audio_minutes, settings.max_upload_mb = 1, 10
+    client = make_client()
+    response = client.post("/api/v1/conversations/analyze", files={"audio": ("a.wav", wav_bytes(tone(200, 61)))})
+    assert response.status_code == 413
+    assert response.json() == {"detail": "Audio longer than 1 minutes"}
 
 
 def test_health_reports_unavailable_when_torch_is_missing(settings, monkeypatch):

@@ -20,6 +20,7 @@ from backend.infrastructure.audio_io import decode
 class StreamSession:
     translate: bool
     max_bytes: int
+    max_seconds: int
     session_id: str = field(default_factory=lambda: uuid.uuid4().hex[:12])
     audio: AudioSegment = field(default_factory=AudioSegment.empty)
     received_bytes: int = 0
@@ -30,7 +31,10 @@ class StreamSession:
         self.last_activity = time.monotonic()
         if self.received_bytes + len(data) > self.max_bytes:
             raise PayloadTooLargeError(f"Stream exceeds {self.max_bytes // (1024 * 1024)} MB")
-        self.audio += decode(data)
+        chunk = decode(data, self.max_seconds)
+        if len(self.audio) + len(chunk) > self.max_seconds * 1000:
+            raise PayloadTooLargeError(f"Audio longer than {self.max_seconds / 60:g} minutes")
+        self.audio += chunk
         self.received_bytes += len(data)
         self.chunks += 1
         return {"chunk_number": self.chunks, "total_duration_s": round(self.duration_s, 3)}

@@ -1,3 +1,5 @@
+import copy
+
 from frontend.services.result_parser import NO_DETAILED_ANALYSIS, is_bilingual, parse_result
 
 
@@ -32,6 +34,31 @@ def test_single_language_response_serves_english_content_to_both_languages(untra
 def test_placeholder_detailed_analysis_is_dropped(english_result):
     english_result["analysis"]["detailed_analysis"] = NO_DETAILED_ANALYSIS
     assert parse_result(english_result, "EN").detailed_analysis == ""
+
+
+def test_arabic_hides_fields_whose_english_twin_is_a_placeholder(placeholder_response):
+    original = copy.deepcopy(placeholder_response)
+
+    arabic = parse_result(placeholder_response, "AR")
+
+    assert arabic.detailed_analysis == ""
+    speaker, interaction = arabic.speakers[1], arabic.interaction
+    for key in ("speaking_style", "emotional_state", "key_contributions"):
+        assert speaker[key] == ""
+    for key in ("conversational_balance", "interruptions", "dominance_pattern"):
+        assert interaction[key] == ""
+    # Fields with real content, and metric values the UI always shows, are kept.
+    assert arabic.speakers[0]["speaking_style"] == "Frustrated but polite"
+    assert arabic.speakers[1]["role"] == "Agent"
+    assert interaction["rapport_level"] == "Medium"
+    assert placeholder_response == original
+
+
+def test_english_keeps_its_placeholders_for_the_components_to_hide(placeholder_response):
+    english = parse_result(placeholder_response, "EN")
+    assert english.detailed_analysis == ""
+    assert english.speakers[1]["speaking_style"] == "Not described"
+    assert english.interaction["conversational_balance"] == "Unknown"
 
 
 def test_duration_falls_back_to_diarization_then_none(english_result):

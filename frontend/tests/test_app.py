@@ -71,6 +71,20 @@ def test_renders_bilingual_results(monkeypatch, make_response, bilingual_respons
     assert expected_sentiment in [m.value for m in at.metric]
 
 
+def test_arabic_view_hides_translated_placeholders(monkeypatch, make_response, placeholder_response):
+    at = _app(monkeypatch, make_response)
+    at.session_state["result"] = placeholder_response
+    at.run()
+
+    assert not at.exception
+    page = "\n".join(_text(elements) for elements in (at.markdown, at.info, at.warning))
+    for placeholder in ("غير معروف", "غير موصوف", "غير محدد", "لم يتم تقديم تحليل مفصل."):
+        assert placeholder not in page
+    assert t("detailed_report", "AR") not in page
+    assert t("dominance_pattern", "AR") not in page
+    assert t("speaker_analysis", "AR") in page
+
+
 def test_english_only_result_in_arabic_ui(monkeypatch, make_response, untranslated_response):
     at = _app(monkeypatch, make_response, {**READY, "translation_available": False})
     at.session_state["result"] = untranslated_response

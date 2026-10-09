@@ -152,6 +152,24 @@ def bilingual_response() -> dict[str, Any]:
 
 
 @pytest.fixture
+def placeholder_response() -> dict[str, Any]:
+    """A translated response whose English side has placeholders the UI hides, translated on the Arabic side."""
+    english, arabic = _english_result(), _arabic_result()
+    for analysis, (unknown, not_described, not_specified, no_details) in (
+        (english["analysis"], ("Unknown", "Not described", "Not specified", "No detailed analysis provided.")),
+        (arabic["analysis"], ("غير معروف", "غير موصوف", "غير محدد", "لم يتم تقديم تحليل مفصل.")),
+    ):
+        analysis["detailed_analysis"] = no_details
+        analysis["speaker_analysis"][1].update(
+            speaking_style=not_described, emotional_state=not_described, key_contributions=not_specified
+        )
+        analysis["interaction_analysis"].update(
+            conversational_balance=unknown, interruptions=unknown, dominance_pattern=not_described
+        )
+    return {"EN": english, "AR": arabic}
+
+
+@pytest.fixture
 def untranslated_response() -> dict[str, Any]:
     """What the API returns when translation was requested but the text model is unavailable."""
     result = _english_result()

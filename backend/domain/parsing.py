@@ -175,7 +175,7 @@ def _interaction_section(interaction: dict[str, Any]) -> dict[str, Any]:
         "rapport_level": _one_of(interaction.get("rapport_level", "Unknown"), VALID_RAPPORT, "Unknown"),
         "cooperation_vs_conflict": str(interaction.get("cooperation_vs_conflict", "Unknown")),
         "dominance_pattern": str(interaction.get("dominance_pattern", "Not described")),
-        "engagement_levels": engagement if isinstance(engagement, dict) else {},
+        "engagement_levels": {str(k): str(v) for k, v in engagement.items()} if isinstance(engagement, dict) else {},
         "interruptions": interaction.get("interruptions", "Calculating..."),
         "conversation_flow": str(interaction.get("conversation_flow", "Not described")),
         "interaction_quality": str(interaction.get("interaction_quality", "Unknown")),

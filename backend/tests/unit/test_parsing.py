@@ -43,6 +43,14 @@ def test_conversation_is_normalised_to_the_full_schema():
     }
 
 
+def test_engagement_levels_are_flattened_to_strings():
+    raw = json.loads(json.dumps(CONVERSATION_JSON))
+    nested = {"speaker_0": {"level": "High"}, "speaker_1": ["Low"], "speaker_2": 3}
+    raw["interaction_analysis"]["engagement_levels"] = nested
+    levels = parse_conversation(json.dumps(raw))["interaction_analysis"]["engagement_levels"]
+    assert levels == {"speaker_0": "{'level': 'High'}", "speaker_1": "['Low']", "speaker_2": "3"}
+
+
 def test_conversation_falls_back_on_missing_sections():
     result = parse_conversation('{"conversation_analysis": {}}')
     assert "parsing_error" in result

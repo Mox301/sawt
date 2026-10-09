@@ -43,6 +43,12 @@ MIN_PAUSE_S = 0.1
 CONTRAST_CLEAR_ABOVE = 15
 CONTRAST_MODERATE_ABOVE = 10
 
+# Prosodic statistics: frames above this fraction of the mean RMS count as voiced;
+# RMS variation (std / mean) and mean zero-crossing rate categories.
+VOICED_RMS_RATIO = 0.5
+DYNAMICS_HIGH_ABOVE = 0.5
+ZCR_CLARITY_HIGH_ABOVE = 0.1
+
 _FEATURE_GROUPS = (
     "pitch_features",
     "energy_features",
@@ -241,7 +247,7 @@ def _prosodic_statistics(y: np.ndarray, sr: int) -> dict[str, Any]:
     zcr = librosa.feature.zero_crossing_rate(y)[0]
 
     mean_rms = np.mean(rms)
-    voiced = rms > mean_rms * 0.5
+    voiced = rms > mean_rms * VOICED_RMS_RATIO
     voice_percentage = np.sum(voiced) / len(voiced) * 100
     dynamics = np.std(rms) / mean_rms if mean_rms > 0 else 0
 
@@ -249,6 +255,6 @@ def _prosodic_statistics(y: np.ndarray, sr: int) -> dict[str, Any]:
         "total_duration_s": float(duration),
         "voice_activity_percentage": float(voice_percentage),
         "silence_percentage": float(100 - voice_percentage),
-        "overall_dynamics": "High" if dynamics > 0.5 else "Low",
-        "articulation_clarity": "High" if np.mean(zcr) > 0.1 else "Moderate",
+        "overall_dynamics": "High" if dynamics > DYNAMICS_HIGH_ABOVE else "Low",
+        "articulation_clarity": "High" if np.mean(zcr) > ZCR_CLARITY_HIGH_ABOVE else "Moderate",
     }

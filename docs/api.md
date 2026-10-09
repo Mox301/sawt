@@ -137,6 +137,6 @@ REST errors are returned as `{"detail": "…"}`:
 
 | Status | Meaning |
 |---|---|
-| 413 | Too large |
+| 413 | Too large: the request body exceeds `SAWT_MAX_UPLOAD_MB` (rejected before it is read in full), or the recording is longer than `SAWT_MAX_AUDIO_MINUTES` |
 | 422 | Not decodable audio |
 | 503 | Models loading or unavailable |

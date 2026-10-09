@@ -50,8 +50,8 @@ frontend that calls it over HTTP.
 
 | Layer | Folder | Responsibility | May import |
 |---|---|---|---|
-| Presentation | `backend/api/` | HTTP/WebSocket, request validation, error → status mapping | services, core |
-| Application | `backend/services/` | Use cases: conversation analysis, translation, streaming sessions, inference gate | domain, prompts, infrastructure (ML only via `interfaces.py`) |
+| Presentation | `backend/api/` | HTTP/WebSocket, request validation, error → status mapping | services, core, container, infrastructure (`audio_io` only) |
+| Application | `backend/services/` | Use cases: conversation analysis, translation, streaming sessions, inference gate | domain, prompts, core, infrastructure (`audio_io`; ML only via `interfaces.py`) |
 | Domain | `backend/domain/` | Pure logic on arrays and dicts: features, diarization stats, turn-taking, parsing, Arabic text rules | nothing outside `domain/` |
 | Infrastructure | `backend/infrastructure/` | Adapters: audio decoding, model loading, Voxtral, pyannote, Qwen (transformers or Ollama) | core, domain entities |
 | Cross-cutting | `backend/core/` | Settings, logging, exceptions | — |
@@ -79,7 +79,9 @@ frontend that calls it over HTTP.
 - **Decoding.** Greedy: the model's generation config does not enable sampling, so the
   same audio gives the same analysis on the same hardware.
 - **Limits.**
-  - Uploads and streams are capped by `SAWT_MAX_UPLOAD_MB` (413 when exceeded).
+  - Uploads and streams are capped by `SAWT_MAX_UPLOAD_MB` (413 when exceeded). An
+    oversized request body is rejected with 413 before it is read in full.
+  - Recordings longer than `SAWT_MAX_AUDIO_MINUTES` are rejected with 413.
   - Concurrent streams are capped by `SAWT_STREAM_MAX_SESSIONS` (429).
   - Idle streams close after `SAWT_STREAM_IDLE_TIMEOUT_S`.
 

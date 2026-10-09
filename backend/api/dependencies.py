@@ -14,5 +14,5 @@ def require_ready(request: Request) -> Container:
     container: Container = request.app.state.container
     if not container.ready:
         state = "loading" if container.loading else "unavailable"
-        raise ModelNotReadyError(f"Models are {state}; check GET /health")
+        raise ModelNotReadyError(f"Models are {state}; check GET /api/v1/health")
     return container

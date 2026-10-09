@@ -9,19 +9,15 @@ import time
 import uuid
 from contextlib import contextmanager
 from dataclasses import dataclass, field
-from typing import Literal
 
 from pydub import AudioSegment
 
 from backend.core.exceptions import AudioDecodeError, PayloadTooLargeError, TooManySessionsError
 from backend.infrastructure.audio_io import decode
 
-Mode = Literal["conversation", "sentiment"]
-
 
 @dataclass
 class StreamSession:
-    mode: Mode
     translate: bool
     max_bytes: int
     session_id: str = field(default_factory=lambda: uuid.uuid4().hex[:12])

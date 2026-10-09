@@ -20,7 +20,6 @@ VALID_PITCH = ["High", "Medium", "Low", "Variable", "Unknown"]
 VALID_RATE = ["Fast", "Moderate", "Slow", "Variable", "Unknown"]
 VALID_ENERGY = ["High", "Moderate", "Low", "Variable", "Unknown"]
 VALID_RAPPORT = ["High", "Medium", "Low", "Unknown"]
-VALID_SENTIMENT_LABELS = ["Positive", "Negative", "Neutral"]
 
 
 class LLMOutputError(ValueError):
@@ -85,9 +84,6 @@ def _next_significant(text: str, i: int) -> str:
         else:
             return text[i]
     return ""
-
-
-# --------------------------------------------------------------------------- conversation
 
 
 def parse_conversation(text: str) -> dict[str, Any]:
@@ -238,33 +234,3 @@ def conversation_fallback(text: str, error: str) -> dict[str, Any]:
         "parsing_error": error,
         "raw_response_excerpt": text.strip()[:500],
     }
-
-
-# --------------------------------------------------------------------------- sentiment
-
-
-def parse_sentiment(text: str) -> dict[str, Any]:
-    try:
-        raw = extract_json_object(text)
-        if "sentiment" not in raw or "analysis" not in raw:
-            raise ValueError("Missing required fields in JSON response")
-        raw["sentiment"] = str(raw["sentiment"]).strip().capitalize()
-        if raw["sentiment"] not in VALID_SENTIMENT_LABELS:
-            raise ValueError(f"Invalid sentiment value: {raw['sentiment']}")
-        return raw
-    except (LLMOutputError, ValueError) as e:
-        logger.error("Failed to parse sentiment response: %s", e)
-        return sentiment_fallback(text)
-
-
-def sentiment_fallback(text: str) -> dict[str, Any]:
-    """Best-effort label from free text when JSON parsing fails."""
-    text = text.strip()
-    lower = text.lower()
-    if "positive" in lower:
-        label = "Positive"
-    elif "negative" in lower:
-        label = "Negative"
-    else:
-        label = "Neutral"
-    return {"sentiment": label, "analysis": f"Extracted from response: {text[:100]}"}

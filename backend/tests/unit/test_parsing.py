@@ -1,6 +1,6 @@
 import json
 
-from backend.domain.parsing import extract_json_object, parse_conversation, parse_sentiment
+from backend.domain.parsing import extract_json_object, parse_conversation
 from backend.tests.fakes import CONVERSATION_JSON
 
 
@@ -51,18 +51,6 @@ def test_conversation_falls_back_on_missing_sections():
 
 def test_conversation_falls_back_without_json():
     assert parse_conversation("I cannot analyse this audio.")["parsing_error"] == "No JSON object found in response"
-
-
-def test_sentiment_label_is_capitalised():
-    assert parse_sentiment('{"sentiment": " negative ", "analysis": "Upset tone."}') == {
-        "sentiment": "Negative",
-        "analysis": "Upset tone.",
-    }
-
-
-def test_sentiment_fallback_reads_free_text():
-    assert parse_sentiment("Overall the speaker sounds positive.")["sentiment"] == "Positive"
-    assert parse_sentiment('{"sentiment": "Angry", "analysis": "x"}')["sentiment"] == "Neutral"
 
 
 def test_relaxed_parsing_keeps_string_contents():

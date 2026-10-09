@@ -5,8 +5,8 @@ frontend that calls it over HTTP.
 
 ```mermaid
 flowchart LR
-    UI["Streamlit UI<br/>(frontend/)"] -- "REST /v1/*" --> API
-    WS["WebSocket client<br/>(examples/stream_client.py)"] -- "WS /v1/stream" --> API
+    UI["Streamlit UI<br/>(frontend/)"] -- "POST /api/v1/conversations/analyze" --> API
+    WS["WebSocket client<br/>(examples/stream_client.py)"] -- "WS /api/v1/conversations/stream" --> API
     subgraph API["FastAPI backend (backend/)"]
         direction TB
         R[api/routes] --> S[services]
@@ -71,7 +71,7 @@ flowchart TD
 | Layer | Folder | Responsibility | May import |
 |---|---|---|---|
 | Presentation | `backend/api/` | HTTP/WebSocket, request validation, error → status mapping | services, core |
-| Application | `backend/services/` | Use cases: conversation, sentiment, translation, streaming sessions, inference gate | domain, prompts, infrastructure (ML only via `interfaces.py`) |
+| Application | `backend/services/` | Use cases: conversation analysis, translation, streaming sessions, inference gate | domain, prompts, infrastructure (ML only via `interfaces.py`) |
 | Domain | `backend/domain/` | Pure logic on arrays and dicts: features, diarization stats, turn-taking, parsing, Arabic text rules | nothing outside `domain/` |
 | Infrastructure | `backend/infrastructure/` | Adapters: audio decoding, model loading, Voxtral, pyannote, Qwen (transformers or Ollama) | core, domain entities |
 | Cross-cutting | `backend/core/` | Settings, logging, exceptions | — |
@@ -87,7 +87,7 @@ flowchart TD
 ## Runtime behaviour
 
 - **Startup.** The server starts immediately and loads models in a background thread.
-  `GET /health` reports `loading`, then `ready`. It reports `degraded` when an
+  `GET /api/v1/health` reports `loading`, then `ready`. It reports `degraded` when an
   optional model (diarization or translation) failed, and `unavailable` when the audio
   model failed. Each model loads independently: a missing translation model only
   disables translation.

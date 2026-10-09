@@ -2,7 +2,7 @@
 
 Interactive docs: `http://localhost:8000/docs` (OpenAPI).
 
-## `GET /health`
+## `GET /api/v1/health`
 
 ```json
 {
@@ -26,7 +26,9 @@ Interactive docs: `http://localhost:8000/docs` (OpenAPI).
 | `degraded` | The audio model is ready, but diarization or translation failed |
 | `unavailable` | The audio model failed to load |
 
-## `POST /v1/conversation`
+## `POST /api/v1/conversations/analyze`
+
+Analyse an uploaded recording.
 
 Multipart form fields:
 
@@ -36,7 +38,7 @@ Multipart form fields:
 | `translate` | bool | `false` | Also return an Arabic version |
 
 ```bash
-curl -F audio=@call.wav -F translate=true http://localhost:8000/v1/conversation
+curl -F audio=@call.wav -F translate=true http://localhost:8000/api/v1/conversations/analyze
 ```
 
 The response is shortened here, and the values are illustrative; every list holds one entry per item:
@@ -110,27 +112,16 @@ With `translate=true`, the response is `{"EN": <result>, "AR": <same result in A
 Measurements, ids and filenames are not translated. If no translation model is
 available, the English result is returned with `metadata.translation = "unavailable"`.
 
-## `POST /v1/sentiment`
+## `WS /api/v1/conversations/stream`
 
-Same form fields. Response:
-
-```json
-{"sentiment": "Negative", "analysis": "The caller repeatedly says the order is late and sounds frustrated."}
-```
-
-`sentiment` is one of `Positive`, `Negative` or `Neutral`. With `translate=true`, the
-response is wrapped in `{EN, AR}`.
-
-## `WS /v1/stream`
-
-Send audio in pieces and receive the analysis when the stream ends. Each binary frame
+Send a recording in pieces and receive the same analysis when the stream ends. Each binary frame
 must be an **independently decodable audio segment**, for example one short WAV per
 few seconds of recording. Frames are decoded and joined in memory.
 
 | Direction | Message |
 |---|---|
-| client → | `{"type": "start", "mode": "conversation" \| "sentiment", "translate": false, "filename": "live.wav"}` |
-| ← server | `{"type": "started", "session_id": "…", "mode": "conversation"}` |
+| client → | `{"type": "start", "translate": false, "filename": "live.wav"}` |
+| ← server | `{"type": "started", "session_id": "…"}` |
 | client → | *binary frame* (audio segment), repeated |
 | ← server | `{"type": "chunk_ack", "chunk_number": 3, "total_duration_s": 15.0}` per frame |
 | client → | `{"type": "end"}` |

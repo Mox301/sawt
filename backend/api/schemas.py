@@ -36,10 +36,9 @@ AnalysisResponse = dict[str, Any]
 
 
 class StreamStart(BaseModel):
-    """First client message on ``/v1/stream``."""
+    """First client message on ``/api/v1/conversations/stream``."""
 
     type: Literal["start"]
-    mode: Literal["conversation", "sentiment"] = "conversation"
     translate: bool = False
     filename: str = Field(default="stream.wav", max_length=255)
 

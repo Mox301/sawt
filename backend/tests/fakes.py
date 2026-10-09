@@ -72,8 +72,6 @@ class FakeAudioLLM:
         self.calls.append((audio_path, prompt, max_new_tokens))
         if self.response is not None:
             return self.response
-        if "sentiment analysis model" in prompt:
-            return '{"sentiment": "negative", "analysis": "The caller sounds upset."}'
         return "```json\n" + json.dumps(CONVERSATION_JSON) + "\n```"
 
 

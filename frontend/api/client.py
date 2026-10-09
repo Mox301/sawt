@@ -21,7 +21,7 @@ _HTTP_ERRORS: dict[int, tuple[str, str]] = {
 
 def get_health() -> Response:
     try:
-        response = requests.get(f"{API_URL}/health", timeout=HEALTH_TIMEOUT_S)
+        response = requests.get(f"{API_URL}/api/v1/health", timeout=HEALTH_TIMEOUT_S)
     except requests.RequestException as exc:
         return _transport_error(exc)
     return _decode(response)
@@ -30,7 +30,7 @@ def get_health() -> Response:
 def analyze_conversation(audio: bytes, filename: str, *, translate: bool, content_type: str | None = None) -> Response:
     try:
         response = requests.post(
-            f"{API_URL}/v1/conversation",
+            f"{API_URL}/api/v1/conversations/analyze",
             files={"audio": (filename, audio, content_type)},
             data={"translate": "true" if translate else "false"},
             timeout=ANALYSIS_TIMEOUT_S,

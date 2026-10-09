@@ -9,8 +9,8 @@ def _chunks():
 
 
 def test_stream_conversation(client):
-    with client.websocket_connect("/v1/stream") as ws:
-        ws.send_json({"type": "start", "mode": "conversation", "translate": False, "filename": "live.wav"})
+    with client.websocket_connect("/api/v1/conversations/stream") as ws:
+        ws.send_json({"type": "start", "translate": False, "filename": "live.wav"})
         assert ws.receive_json()["type"] == "started"
         for i, chunk in enumerate(_chunks(), start=1):
             ws.send_bytes(chunk)
@@ -23,20 +23,21 @@ def test_stream_conversation(client):
     assert result["data"]["diarization_info"]["num_speakers"] == 2
 
 
-def test_stream_sentiment_with_translation(client):
-    with client.websocket_connect("/v1/stream") as ws:
-        ws.send_json({"type": "start", "mode": "sentiment", "translate": True})
+def test_stream_with_translation(client):
+    with client.websocket_connect("/api/v1/conversations/stream") as ws:
+        ws.send_json({"type": "start", "translate": True})
         ws.receive_json()
         ws.send_bytes(_chunks()[0])
         ws.receive_json()
         ws.send_json({"type": "end"})
         ws.receive_json()
         data = ws.receive_json()["data"]
-    assert data["AR"]["sentiment"] == "سلبي"
+    assert set(data) == {"EN", "AR"}
+    assert data["AR"]["analysis"]["conversation_analysis"]["overall_sentiment"] == "مختلط"
 
 
 def test_stream_rejects_bad_protocol(client):
-    with client.websocket_connect("/v1/stream") as ws:
+    with client.websocket_connect("/api/v1/conversations/stream") as ws:
         ws.send_json({"type": "chunk"})
         error = ws.receive_json()
         assert error["type"] == "error" and error["status"] == 400
@@ -45,7 +46,7 @@ def test_stream_rejects_bad_protocol(client):
 
 
 def test_stream_end_without_audio(client):
-    with client.websocket_connect("/v1/stream") as ws:
+    with client.websocket_connect("/api/v1/conversations/stream") as ws:
         ws.send_json({"type": "start"})
         ws.receive_json()
         ws.send_json({"type": "end"})

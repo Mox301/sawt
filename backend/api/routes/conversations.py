@@ -1,40 +1,69 @@
-"""WebSocket streaming: send audio in chunks, receive the analysis when done.
-
-Protocol (see docs/api.md):
-  client → {"type": "start", "mode": "conversation"|"sentiment", "translate": bool}
-  server → {"type": "started", "session_id": ...}
-  client → binary frames, each an independently decodable audio segment
-  server → {"type": "chunk_ack", "chunk_number": n, "total_duration_s": s}   (per frame)
-  client → {"type": "end"}
-  server → {"type": "processing"} then {"type": "result", "data": {...}} and closes
-Any failure → {"type": "error", "detail": ...} and the socket closes.
-"""
+"""Conversation analysis: upload a recording, or stream it over a WebSocket."""
 
 import asyncio
 import json
 import logging
 
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Depends, File, Form, UploadFile, WebSocket, WebSocketDisconnect
 from pydantic import ValidationError
 
+from backend.api.dependencies import require_ready
 from backend.api.errors import status_code_for
-from backend.api.schemas import StreamEnd, StreamStart
+from backend.api.schemas import AnalysisResponse, ErrorResponse, StreamEnd, StreamStart
 from backend.container import Container
-from backend.core.exceptions import ModelNotReadyError, SawtError, StreamProtocolError
+from backend.core.exceptions import ModelNotReadyError, PayloadTooLargeError, SawtError, StreamProtocolError
 from backend.infrastructure.audio_io import prepared_audio
 from backend.services.streaming import StreamSession
 
 logger = logging.getLogger(__name__)
-router = APIRouter(prefix="/v1", tags=["streaming"])
+router = APIRouter(prefix="/api/v1/conversations", tags=["conversations"])
+
+ERRORS = {
+    413: {"model": ErrorResponse, "description": "Upload exceeds SAWT_MAX_UPLOAD_MB"},
+    422: {"model": ErrorResponse, "description": "File could not be decoded as audio"},
+    503: {"model": ErrorResponse, "description": "Models are still loading"},
+}
+
+
+@router.post("/analyze", response_model=AnalysisResponse, responses=ERRORS)
+async def analyze(
+    audio: UploadFile = File(..., description="Audio file (wav, mp3, m4a, flac, ogg …)"),
+    translate: bool = Form(False, description="Also return an Arabic version: {EN, AR}"),
+    container: Container = Depends(require_ready),
+) -> AnalysisResponse:
+    """Multi-speaker conversation analysis: diarization, prosody, turn-taking and the
+    audio-LLM's conversation, speaker and interaction analysis."""
+    max_bytes = container.settings.max_upload_bytes
+    data = await audio.read(max_bytes + 1)
+    if len(data) > max_bytes:
+        raise PayloadTooLargeError(f"Upload exceeds {max_bytes // (1024 * 1024)} MB")
+    filename = audio.filename or "upload"
+
+    def run():
+        with prepared_audio(data) as prepared:
+            return container.conversation.analyze(prepared, filename, translate)
+
+    return await container.gate.run(run)
 
 
 @router.websocket("/stream")
 async def stream(websocket: WebSocket) -> None:
+    """Send audio in chunks and receive the analysis when the stream ends.
+
+    Protocol (see docs/api.md):
+      client → {"type": "start", "translate": bool, "filename": str}
+      server → {"type": "started", "session_id": ...}
+      client → binary frames, each an independently decodable audio segment
+      server → {"type": "chunk_ack", "chunk_number": n, "total_duration_s": s}   (per frame)
+      client → {"type": "end"}
+      server → {"type": "processing"} then {"type": "result", "data": {...}} and closes
+    Any failure → {"type": "error", "status": ..., "detail": ...} and the socket closes.
+    """
     container: Container = websocket.app.state.container
     await websocket.accept()
     try:
         if not container.ready:
-            raise ModelNotReadyError("Models are not ready; check GET /health")
+            raise ModelNotReadyError("Models are not ready; check GET /api/v1/health")
         with container.sessions.slot():
             await _run_session(websocket, container)
     except WebSocketDisconnect:
@@ -51,8 +80,8 @@ async def _run_session(websocket: WebSocket, container: Container) -> None:
     timeout = settings.stream_idle_timeout_s
 
     start = _parse(await _receive(websocket, timeout), StreamStart)
-    session = StreamSession(start.mode, start.translate, settings.max_upload_bytes)
-    await websocket.send_json({"type": "started", "session_id": session.session_id, "mode": session.mode})
+    session = StreamSession(start.translate, settings.max_upload_bytes)
+    await websocket.send_json({"type": "started", "session_id": session.session_id})
 
     while True:
         message = await _receive(websocket, timeout)
@@ -68,8 +97,6 @@ async def _run_session(websocket: WebSocket, container: Container) -> None:
 
     def run():
         with prepared_audio(audio) as prepared:
-            if session.mode == "sentiment":
-                return container.sentiment.analyze(prepared, session.translate)
             return container.conversation.analyze(prepared, start.filename, session.translate)
 
     result = await container.gate.run(run)

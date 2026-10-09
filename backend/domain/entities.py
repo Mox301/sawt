@@ -80,17 +80,10 @@ class TurnTakingMetrics(TypedDict, total=False):
 
 
 class ConversationResult(TypedDict):
-    """Response of ``POST /v1/conversation`` (before optional translation)."""
+    """Response of ``POST /api/v1/conversations/analyze`` (before optional translation)."""
 
     analysis: dict[str, Any]
     diarization_info: dict[str, Any]
     acoustic_features: dict[str, Any]
     metadata: dict[str, Any]
     turn_taking_metrics: NotRequired[TurnTakingMetrics]
-
-
-class SentimentResult(TypedDict):
-    """Response of ``POST /v1/sentiment`` (before optional translation)."""
-
-    sentiment: str
-    analysis: str

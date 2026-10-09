@@ -7,13 +7,15 @@ from backend.container import Container
 
 router = APIRouter(tags=["health"])
 
+HEALTH_PATH = "/api/v1/health"
+
 
 @router.get("/", include_in_schema=False)
 def root() -> dict[str, str]:
-    return {"name": "sawt", "version": __version__, "docs": "/docs", "health": "/health"}
+    return {"name": "sawt", "version": __version__, "docs": "/docs", "health": HEALTH_PATH}
 
 
-@router.get("/health", response_model=HealthResponse)
+@router.get(HEALTH_PATH, response_model=HealthResponse)
 def health(container: Container = Depends(get_container)) -> HealthResponse:
     """Readiness and the state of each model."""
     registry = container.registry

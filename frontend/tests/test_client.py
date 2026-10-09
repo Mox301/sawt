@@ -31,7 +31,7 @@ def test_success_returns_body_and_sends_multipart(monkeypatch, make_response, en
 
     assert result == english_result
     (call,) = calls
-    assert call["url"] == f"{API_URL}/v1/conversation"
+    assert call["url"] == f"{API_URL}/api/v1/conversations/analyze"
     assert call["files"] == {"audio": ("call.wav", b"RIFF....", "audio/wav")}
     assert call["data"] == {"translate": form_value}
     assert call["timeout"] == 3600
@@ -57,7 +57,7 @@ def test_timeout(monkeypatch, exc):
     ("status", "detail", "title"),
     [
         (422, "Could not decode audio: invalid data", "Invalid Audio"),
-        (503, "Models are loading; check GET /health", "Models Not Ready"),
+        (503, "Models are loading; check GET /api/v1/health", "Models Not Ready"),
         (413, "Upload exceeds 100 MB", "File Too Large"),
     ],
 )

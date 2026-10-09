@@ -1,7 +1,7 @@
 """FastAPI application factory.
 
 Run with:  uvicorn backend.main:create_app --factory
-Models load in a background thread so the server answers /health immediately.
+Models load in a background thread so the server answers /api/v1/health immediately.
 """
 
 import asyncio
@@ -12,7 +12,7 @@ from fastapi import FastAPI
 
 from backend import __version__
 from backend.api.errors import register_error_handlers
-from backend.api.routes import analysis, health, stream
+from backend.api.routes import conversations, health
 from backend.container import Container
 from backend.core.config import Settings, get_settings
 from backend.core.logging import setup_logging
@@ -54,6 +54,5 @@ def create_app(
     app.state.container = container
     register_error_handlers(app)
     app.include_router(health.router)
-    app.include_router(analysis.router)
-    app.include_router(stream.router)
+    app.include_router(conversations.router)
     return app

@@ -2,15 +2,13 @@ import hashlib
 
 from backend.domain.arabic import glossary_lookup, is_arabic, mask_speaker_refs, replace_speaker_refs, to_arabic_digits
 from backend.prompts.conversation import CONVERSATION_ANALYSIS_PROMPT
-from backend.prompts.sentiment import SENTIMENT_ANALYSIS_PROMPT
 from backend.services.translation import TranslationService
 from backend.tests.fakes import FakeTextLLM
 
 
-def test_prompts_are_unchanged():
-    """The prompts are tuned; any edit must be deliberate (update the hashes with it)."""
+def test_prompt_is_unchanged():
+    """The prompt is tuned; any edit must be deliberate (update the hash with it)."""
     assert hashlib.sha256(CONVERSATION_ANALYSIS_PROMPT.encode()).hexdigest()[:16] == "94a38a94ed357642"
-    assert hashlib.sha256(SENTIMENT_ANALYSIS_PROMPT.encode()).hexdigest()[:16] == "67aaa9aa3d25a3f2"
 
 
 def test_arabic_helpers():

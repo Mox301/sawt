@@ -113,14 +113,13 @@ make up-cpu    # translation via Ollama on the host; give Docker Desktop ≥ 14 
 
 | Endpoint | Purpose |
 |---|---|
-| `GET /health` | Readiness and per-model status |
-| `POST /v1/conversation` | Full conversation analysis (`audio` file, optional `translate=true`) |
-| `POST /v1/sentiment` | Positive / Negative / Neutral with justification |
-| `WS /v1/stream` | Send audio in chunks, get the analysis at the end |
+| `GET /api/v1/health` | Readiness and per-model status |
+| `POST /api/v1/conversations/analyze` | Analyse an uploaded recording (`audio` file, optional `translate=true`) |
+| `WS /api/v1/conversations/stream` | Stream a recording in chunks, get the analysis at the end |
 
 ```bash
-curl -F audio=@call.wav -F translate=true http://localhost:8000/v1/conversation
-uv run --project backend python examples/stream_client.py call.wav --mode sentiment
+curl -F audio=@call.wav -F translate=true http://localhost:8000/api/v1/conversations/analyze
+uv run --project backend python examples/stream_client.py call.wav --translate
 ```
 
 Request and response formats are in [docs/api.md](docs/api.md).
@@ -141,7 +140,7 @@ Everything is set through environment variables or `.env`; see [.env.example](.e
 ```
 backend/            FastAPI service, layered:
   api/              routes, schemas, error mapping            (HTTP / WebSocket only)
-  services/         use cases: conversation, sentiment, translation, streaming
+  services/         use cases: conversation analysis, translation, streaming sessions
   domain/           pure logic: acoustics, diarization stats, turn-taking, parsing, Arabic rules
   infrastructure/   adapters: audio decoding, Voxtral, pyannote, Qwen (transformers / Ollama)
   prompts/          model prompts

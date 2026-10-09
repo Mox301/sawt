@@ -23,14 +23,14 @@ def test_undecodable_audio():
 
 
 def test_stream_session_accumulates_chunks():
-    session = StreamSession("conversation", translate=False, max_bytes=10_000_000)
+    session = StreamSession(translate=False, max_bytes=10_000_000)
     session.add_chunk(wav_bytes(tone(200, 0.5)))
     ack = session.add_chunk(wav_bytes(tone(300, 0.25)))
     assert ack == {"chunk_number": 2, "total_duration_s": 0.75}
 
 
 def test_stream_session_limits():
-    session = StreamSession("sentiment", translate=False, max_bytes=100)
+    session = StreamSession(translate=False, max_bytes=100)
     with pytest.raises(PayloadTooLargeError):
         session.add_chunk(wav_bytes(tone(200, 0.5)))
     with pytest.raises(AudioDecodeError):

@@ -1,4 +1,4 @@
-"""Shared fixtures: realistic API responses shaped like the backend's ``/v1/conversation`` output."""
+"""Shared fixtures: realistic API responses shaped like the backend's ``POST /api/v1/conversations/analyze`` output."""
 
 import json
 from collections.abc import Callable

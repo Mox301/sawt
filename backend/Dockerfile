@@ -28,5 +28,5 @@ USER sawt
 
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s \
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health')"
 CMD ["uvicorn", "backend.main:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000"]

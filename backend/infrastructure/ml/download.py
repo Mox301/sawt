@@ -20,7 +20,8 @@ def main() -> None:
 
     for repo in repos:
         print(f"Downloading {repo} …", flush=True)
-        snapshot_download(repo)
+        # Voxtral also ships Mistral-native weights (consolidated.safetensors, ~9 GB) that transformers doesn't use.
+        snapshot_download(repo, ignore_patterns=["consolidated.*"])
 
     if s.translation_backend == "ollama":
         print(f"Translation runs on Ollama; pull the model with:  ollama pull {s.ollama_model}")

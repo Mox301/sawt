@@ -1,6 +1,6 @@
 """Pick one language out of an API response and expose its sections.
 
-``POST /v1/conversation`` returns either ``{"EN": result, "AR": result}`` (translated)
+``POST /api/v1/conversations/analyze`` returns either ``{"EN": result, "AR": result}`` (translated)
 or a single English ``result``. Both shapes are read the same way here, so the Arabic
 UI still works on an English-only result (Arabic labels, English content).
 """

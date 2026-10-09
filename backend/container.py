@@ -6,7 +6,6 @@ from backend.core.config import Settings
 from backend.infrastructure.ml.registry import ModelRegistry
 from backend.services.conversation import ConversationAnalysisService
 from backend.services.inference_gate import InferenceGate
-from backend.services.sentiment import SentimentAnalysisService
 from backend.services.streaming import SessionLimiter
 from backend.services.translation import TranslationService
 
@@ -22,7 +21,6 @@ class Container:
         self.loading = False
         self.translator = TranslationService(None)
         self.conversation: ConversationAnalysisService | None = None
-        self.sentiment: SentimentAnalysisService | None = None
 
     @property
     def ready(self) -> bool:
@@ -44,5 +42,4 @@ class Container:
             logger.error("Audio model unavailable; analysis endpoints will return 503")
             return
         self.conversation = ConversationAnalysisService(r.audio_llm, r.diarizer, self.translator)
-        self.sentiment = SentimentAnalysisService(r.audio_llm, self.translator)
         logger.info("Services ready")

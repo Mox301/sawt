@@ -1,7 +1,8 @@
 # NVIDIA GPU (Linux + nvidia-container-toolkit):
 #   docker compose run --rm -e HF_HUB_OFFLINE=0 api python -m backend.infrastructure.ml.download
 #   docker compose up --build
-# CPU only (any machine, slow):  add  -f compose.yaml -f compose.cpu.yaml
+# CPU only (linux/amd64 or linux/arm64, slow):  add  -f compose.yaml -f compose.cpu.yaml
+# Ports are published on 127.0.0.1 only: the API has no authentication.
 name: sawt
 
 services:
@@ -18,7 +19,7 @@ services:
     volumes:
       - models:/models
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     deploy:
       resources:
         reservations:
@@ -35,7 +36,7 @@ services:
     environment:
       SAWT_API_URL: http://api:8000
     ports:
-      - "8501:8501"
+      - "127.0.0.1:8501:8501"
     depends_on:
       - api
 

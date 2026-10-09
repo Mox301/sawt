@@ -64,14 +64,18 @@ See [docs/architecture.md](docs/architecture.md) for the full pipeline.
 ## Quick start
 
 All three setups serve the UI at <http://localhost:8501> and the API at
-<http://localhost:8000> (OpenAPI docs at `/docs`).
+<http://localhost:8000> (OpenAPI docs at `/docs`). The API has no authentication, so both
+listen on localhost only. Docker publishes them on `127.0.0.1`; to expose them
+deliberately, change the `ports` entries in `compose.yaml` (for example to `"8000:8000"`).
 
 The diarization model is gated. Before downloading models:
 
 1. Accept its terms at <https://huggingface.co/pyannote/speaker-diarization-community-1>.
-2. Give the downloader a Hugging Face token: either put `HF_TOKEN=…` in `.env` (copy it
-   from `.env.example`), or run `uv run --project backend hf auth login` after
-   `make setup`.
+2. Give the downloader a Hugging Face token, in one of two ways:
+   - put `HF_TOKEN=…` in `.env` (copy `.env.example`). This works for every setup: the
+     native API and `make models` read `.env`, and Docker passes it to the container.
+   - run `uv run --project backend hf auth login` after `make setup`. This works for the
+     native setup only: the Docker containers do not see the host's login.
 
 ### NVIDIA GPU (Docker)
 
@@ -101,6 +105,12 @@ make dev-mac                                 # pulls the Ollama model if needed,
 make up-cpu    # translation via Ollama on the host; give Docker Desktop ≥ 14 GB of memory
 ```
 
+The image builds for linux/amd64 and linux/arm64 (Apple Silicon, ARM servers). On Linux
+with Docker Engine, Ollama listens on 127.0.0.1 only, so the container cannot reach it:
+set `OLLAMA_HOST=0.0.0.0` (`sudo systemctl edit ollama` →
+`Environment=OLLAMA_HOST=0.0.0.0`), or run translation in the container with
+`SAWT_TRANSLATION_BACKEND=transformers`.
+
 ## API
 
 | Endpoint | Purpose |
@@ -126,6 +136,7 @@ Everything is set through environment variables or `.env`; see [.env.example](.e
 | `SAWT_TRANSLATION_BACKEND` | `transformers` | `transformers` (Qwen3-4B on the same device), `ollama`, or `off` |
 | `SAWT_ENABLE_DIARIZATION` | `true` | Turn off to skip pyannote |
 | `SAWT_MAX_UPLOAD_MB` | `100` | Upload and stream size limit |
+| `SAWT_MAX_AUDIO_MINUTES` | `40` | Longest recording analysed |
 
 ## Project layout
 

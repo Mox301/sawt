@@ -46,6 +46,7 @@ diagrams:  ## Re-render docs/images/*.svg from docs/diagrams/*.mmd (needs Node.j
 	  $(MMDC) -c docs/diagrams/theme-light.json -b '#FFFFFF' -i docs/diagrams/$$d.mmd -o docs/images/$$d-light.svg; \
 	  $(MMDC) -c docs/diagrams/theme-dark.json -b '#0D1117' -i docs/diagrams/$$d.mmd -o docs/images/$$d-dark.svg; \
 	done
+	python3 docs/diagrams/size_svgs.py docs/images/*.svg
 
 # ---------------------------------------------------------------- quality
 test:  ## Run all tests (no models needed)
@@ -57,9 +58,13 @@ lint:  ## Lint and check formatting
 	uv run --project frontend ruff check frontend && uv run --project frontend ruff format --check frontend
 	uv run --project backend ruff check examples && uv run --project backend ruff format --check examples
 
+requirements:  ## Export pinned requirements.txt files from the uv lock files (for pip users)
+	uv export --project backend --frozen --no-dev --extra ml --no-hashes --no-emit-project -q -o backend/requirements.txt
+	uv export --project frontend --frozen --no-dev --no-hashes --no-emit-project -q -o frontend/requirements.txt
+
 format:  ## Auto-format
 	uv run --project backend ruff format backend && uv run --project backend ruff check --fix backend
 	uv run --project frontend ruff format frontend && uv run --project frontend ruff check --fix frontend
 	uv run --project backend ruff format examples && uv run --project backend ruff check --fix examples
 
-.PHONY: help setup models api ui dev-mac up up-cpu down diagrams test lint format
+.PHONY: help setup models api ui dev-mac up up-cpu down diagrams requirements test lint format

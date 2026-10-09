@@ -149,6 +149,10 @@ make test     # backend + frontend tests; no model weights needed
 make lint     # ruff
 ```
 
+Dependencies are declared in each service's `pyproject.toml` and pinned in `uv.lock`.
+Pinned `requirements.txt` files are exported for pip users
+(`pip install -r backend/requirements.txt`) and kept in sync by CI (`make requirements`).
+
 The services depend on small model interfaces (`AudioLLM`, `TextLLM`, `Diarizer`), so
 the whole pipeline is tested on any laptop and in CI with fake models.
 

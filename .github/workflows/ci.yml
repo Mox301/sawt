@@ -13,6 +13,8 @@ jobs:
       - uses: astral-sh/setup-uv@v6
       - run: uvx ruff check .
       - run: uvx ruff format --check .
+      - name: requirements.txt files match the uv lock files
+        run: make requirements && git diff --exit-code -- backend/requirements.txt frontend/requirements.txt
 
   test:
     runs-on: ubuntu-latest

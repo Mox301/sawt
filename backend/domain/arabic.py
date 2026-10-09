@@ -106,6 +106,12 @@ GLOSSARY: dict[str, str] = {
     "Overlapping": "متداخل",
     "Interruptions": "مقاطعات",
     "Smooth transitions": "انتقالات سلسة",
+    # Labels produced by Sawt's own turn-taking measurements (domain/turn_taking.py, domain/prosody.py).
+    "Smooth": "سلس",
+    "Interrupted": "كثير المقاطعات",
+    "Sequential": "متتابع",
+    "Monologue": "حديث فردي",
+    "None": "لا يوجد",
 }
 
 ARABIC_INDIC_DIGITS = str.maketrans("0123456789", "٠١٢٣٤٥٦٧٨٩")
@@ -114,6 +120,7 @@ SPEAKER_WORD_AR = "متحدث"
 _ARABIC_CHARS = re.compile(r"[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]")
 _SPEAKER_REF = re.compile(r"(Speaker|SPEAKER|speaker)[_\s]+(\d+)", re.IGNORECASE)
 _SPEAKER_ID = re.compile(r"^(Speaker|SPEAKER|speaker)[_\s]\d+$", re.IGNORECASE)
+_PLACEHOLDER = re.compile(r"_*SPK_?\d+_*")
 _DOMINATED_BY = re.compile(r"Dominated by (Speaker|SPEAKER)[_\s]+(\d+)", re.IGNORECASE)
 _SENTENCE_MARKERS = (
     " the ",
@@ -172,6 +179,11 @@ def unmask_speaker_refs(text: str, placeholders: dict[str, str]) -> str:
         if bare in text:
             text = text.replace(bare, replacement)
     return replace_speaker_refs(text)
+
+
+def has_placeholder(text: str) -> bool:
+    """True if a ``__SPK_n__`` placeholder (or a mangled ``SPKn``) survived translation."""
+    return bool(_PLACEHOLDER.search(text))
 
 
 def glossary_lookup(text: str) -> str | None:

@@ -117,6 +117,16 @@ sudo systemctl restart ollama
 
 Ollama has no authentication, so keep port 11434 closed to other machines.
 
+### Measured performance
+
+Measured on an Apple M4 Pro (24 GB) through the native MPS path.
+Models load in about 25 s. A one-minute two-speaker conversation takes about 3–4 minutes
+to analyse. Diarization alone takes 2–8 s on MPS, compared with 18–34 s on CPU. Voxtral
+(fp16, about 9.4 GB of weights) and the 4-bit Qwen3 in Ollama (3.2 GB) fit together in
+24 GB of unified memory.
+
+The NVIDIA Docker path has not yet been benchmarked.
+
 ## API
 
 | Endpoint | Purpose |

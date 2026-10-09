@@ -51,7 +51,8 @@ def test_bilingual_translation():
     # Free text goes to the model with speaker refs masked, and comes back unmasked in Arabic.
     assert ar["analysis"]["conversation_analysis"]["conversation_summary"] == "ترجمة[متحدث ١ helps the caller.]"
     assert any("__SPK_0__ helps the caller." in p for p in llm.prompts)
-    assert len(llm.prompts) == 3  # summary, "Agent", "Smooth" (not in glossary)
+    assert len(llm.prompts) == 2  # summary and "Agent"; "Smooth" comes from the glossary
+    assert ar["turn_taking_metrics"]["turn_taking_style"] == "سلس"
 
 
 def test_empty_model_output_keeps_english():
@@ -67,3 +68,16 @@ def test_without_text_model_result_is_marked():
     out = TranslationService(None).translate(_result())
     assert "EN" not in out
     assert out["metadata"] == {"audio_filename": "call.wav", "translation": "unavailable"}
+
+
+def test_invented_placeholder_falls_back_to_english():
+    """Small models sometimes echo the prompt's __SPK_0__ example instead of translating."""
+
+    class Echo(FakeTextLLM):
+        def generate_batch(self, prompts, max_new_tokens):
+            return ["__SPK_0__"] * len(prompts)
+
+    data = {"analysis": {"note": "Quite brief exchange", "interruptions": "None"}}
+    ar = TranslationService(Echo()).translate(data)["AR"]["analysis"]
+    assert ar["note"] == "Quite brief exchange"
+    assert ar["interruptions"] == "لا يوجد"  # deterministic label, never sent to the model

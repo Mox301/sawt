@@ -18,6 +18,7 @@ from typing import Any
 from backend.domain.arabic import (
     NON_TRANSLATABLE_KEYS,
     glossary_lookup,
+    has_placeholder,
     is_arabic,
     is_speaker_id,
     mask_speaker_refs,
@@ -92,7 +93,10 @@ def _clean_output(output: str, placeholders: dict[str, str]) -> str:
     translation = output.strip()
     if "\n\n" in translation:  # keep the translation, drop any trailing commentary
         translation = translation.split("\n\n")[0].strip()
-    return unmask_speaker_refs(translation, placeholders)
+    translation = unmask_speaker_refs(translation, placeholders)
+    # A placeholder the model invented (e.g. echoed from the prompt) means the output is unusable;
+    # returning "" makes the caller keep the English text.
+    return "" if has_placeholder(translation) else translation
 
 
 def _collect(data: Any, path: Path, paths: list[Path], texts: list[str]) -> None:

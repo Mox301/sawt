@@ -30,3 +30,6 @@ jobs:
       # The model runtime (torch, transformers, pyannote) is not installed: tests use in-memory fakes.
       - run: uv sync --project ${{ matrix.service }} --locked
       - run: uv run --project ${{ matrix.service }} pytest ${{ matrix.service }}/tests -q
+      - name: Example client tests
+        if: matrix.service == 'backend'
+        run: uv run --project backend pytest examples -q

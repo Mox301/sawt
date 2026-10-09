@@ -52,6 +52,7 @@ diagrams:  ## Re-render docs/images/*.svg from docs/diagrams/*.mmd (needs Node.j
 test:  ## Run all tests (no models needed)
 	uv run --project backend pytest backend/tests -q
 	uv run --project frontend pytest frontend/tests -q
+	uv run --project backend pytest examples -q
 
 lint:  ## Lint and check formatting
 	uv run --project backend ruff check backend && uv run --project backend ruff format --check backend

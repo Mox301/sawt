@@ -10,6 +10,7 @@ import argparse
 import asyncio
 import io
 import json
+import os
 
 import websockets
 from pydub import AudioSegment
@@ -26,25 +27,29 @@ def segments(path: str, seconds: float) -> list[bytes]:
     return chunks
 
 
+async def reply(ws: websockets.ClientConnection, expected: str) -> dict:
+    """Receive the next server message; exit with the server's error if it is not ``expected``."""
+    message = json.loads(await ws.recv())
+    if message.get("type") != expected:
+        raise SystemExit(f"error {message.get('status')}: {message.get('detail')}")
+    return message
+
+
 async def stream(url: str, path: str, translate: bool, chunk_seconds: float) -> dict:
     async with websockets.connect(url, max_size=None) as ws:
-        await ws.send(json.dumps({"type": "start", "translate": translate, "filename": path}))
-        print(json.loads(await ws.recv()))
+        start = {"type": "start", "translate": translate, "filename": os.path.basename(path)}
+        await ws.send(json.dumps(start))
+        print(await reply(ws, "started"))
 
         for chunk in segments(path, chunk_seconds):
             await ws.send(chunk)
-            ack = json.loads(await ws.recv())
+            ack = await reply(ws, "chunk_ack")
             print(f"  chunk {ack['chunk_number']}: {ack['total_duration_s']:.1f}s received")
 
         await ws.send(json.dumps({"type": "end"}))
-        while True:
-            message = json.loads(await ws.recv())
-            if message["type"] == "processing":
-                print(f"processing {message['total_duration_s']:.1f}s of audio …")
-            elif message["type"] == "error":
-                raise SystemExit(f"error {message['status']}: {message['detail']}")
-            else:
-                return message["data"]
+        processing = await reply(ws, "processing")
+        print(f"processing {processing['total_duration_s']:.1f}s of audio …")
+        return (await reply(ws, "result"))["data"]
 
 
 def main() -> None:

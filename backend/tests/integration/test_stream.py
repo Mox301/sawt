@@ -1,6 +1,9 @@
+import asyncio
+
 import pytest
 from starlette.websockets import WebSocketDisconnect
 
+from backend.services.streaming import StreamSession
 from backend.tests.conftest import tone, wav_bytes
 
 
@@ -34,6 +37,27 @@ def test_stream_with_translation(client):
         data = ws.receive_json()["data"]
     assert set(data) == {"EN", "AR"}
     assert data["AR"]["analysis"]["conversation_analysis"]["overall_sentiment"] == "مختلط"
+
+
+def test_stream_chunks_are_decoded_off_the_event_loop(client, monkeypatch):
+    on_event_loop = []
+    add_chunk = StreamSession.add_chunk
+
+    def spy(self, data):
+        try:
+            asyncio.get_running_loop()
+            on_event_loop.append(True)
+        except RuntimeError:
+            on_event_loop.append(False)
+        return add_chunk(self, data)
+
+    monkeypatch.setattr(StreamSession, "add_chunk", spy)
+    with client.websocket_connect("/api/v1/conversations/stream") as ws:
+        ws.send_json({"type": "start"})
+        ws.receive_json()
+        ws.send_bytes(_chunks()[0])
+        assert ws.receive_json()["type"] == "chunk_ack"
+    assert on_event_loop == [False]
 
 
 def test_stream_rejects_bad_protocol(client):

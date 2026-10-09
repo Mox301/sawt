@@ -6,6 +6,7 @@ import logging
 
 from fastapi import APIRouter, Depends, File, Form, UploadFile, WebSocket, WebSocketDisconnect
 from pydantic import ValidationError
+from starlette.concurrency import run_in_threadpool
 
 from backend.api.dependencies import require_ready
 from backend.api.errors import status_code_for
@@ -86,7 +87,8 @@ async def _run_session(websocket: WebSocket, container: Container) -> None:
     while True:
         message = await _receive(websocket, timeout)
         if message.get("bytes") is not None:
-            ack = session.add_chunk(message["bytes"])
+            # Decoding runs FFmpeg; keep it off the event loop.
+            ack = await run_in_threadpool(session.add_chunk, message["bytes"])
             await websocket.send_json({"type": "chunk_ack", **ack})
         elif message.get("text") is not None:
             _parse(message, StreamEnd)

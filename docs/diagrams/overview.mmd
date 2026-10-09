@@ -1,0 +1,14 @@
+flowchart LR
+    A["Recording<br/>(any format)"] --> B["16 kHz mono audio"]
+    B == "audio" ==> E["Voxtral-Mini-3B<br/>listens to the audio<br/>→ JSON analysis"]
+    B --> C["pyannote<br/>speaker diarization"]
+    B --> D["librosa<br/>acoustic features"]
+    C -. "speaker count and split,<br/>added to the prompt" .-> E
+    C --> F["turn-taking<br/>metrics"]
+    E --> G["merge and<br/>normalise"]
+    D --> G
+    F --> G
+    G --> H{"Arabic<br/>requested?"}
+    H -- "no" --> I["English result"]
+    H -- "yes" --> J["glossary + Qwen3-4B<br/>translation"]
+    J --> K["English + Arabic result"]

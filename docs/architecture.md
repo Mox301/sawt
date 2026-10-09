@@ -3,41 +3,21 @@
 Sawt is two services: a FastAPI backend that runs the models, and a Streamlit
 frontend that calls it over HTTP.
 
-```mermaid
-flowchart LR
-    UI["Streamlit UI<br/>(frontend/)"] -- "POST /api/v1/conversations/analyze" --> API
-    WS["WebSocket client<br/>(examples/stream_client.py)"] -- "WS /api/v1/conversations/stream" --> API
-    subgraph API["FastAPI backend (backend/)"]
-        direction TB
-        R[api/routes] --> S[services]
-        S --> D[domain]
-        S --> P[(ML ports)]
-        P -.implemented by.-> I[infrastructure/ml]
-    end
-    I --> V[Voxtral-Mini-3B]
-    I --> PY[pyannote community-1]
-    I --> Q[Qwen3-4B<br/>transformers or Ollama]
-```
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="images/system-dark.svg">
+    <img alt="System: Streamlit UI and WebSocket client call the FastAPI backend; api, services, domain layers; ML ports implemented by infrastructure adapters for Voxtral, pyannote and Qwen3" src="images/system-light.svg">
+  </picture>
+</p>
 
 ## Analysis pipeline
 
-```mermaid
-flowchart TD
-    A[Upload: any FFmpeg-readable audio] --> B[Decode to 16 kHz mono<br/>infrastructure/audio_io.py]
-    B --> C[Speaker diarization<br/>pyannote community-1]
-    B --> D[Acoustic features<br/>librosa: pitch, energy, spectrum, tempo, pauses]
-    C --> E[Prompt + diarization context]
-    E --> F[Voxtral-Mini-3B listens and answers in JSON<br/>conversation · speakers · prosody · interaction]
-    F --> G[Parse and normalise<br/>domain/parsing.py]
-    D --> H[Merge measurements<br/>domain/prosody.py]
-    C --> T[Turn-taking metrics<br/>domain/turn_taking.py]
-    G --> H
-    T --> H
-    H --> J{translate?}
-    J -- no --> K[Result]
-    J -- yes --> L[EN→AR: glossary for labels,<br/>Qwen3-4B for free text]
-    L --> M["{EN, AR}"]
-```
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="images/pipeline-dark.svg">
+    <img alt="Analysis pipeline: decoded audio goes directly to Voxtral together with a prompt that includes diarization context; acoustic features and turn-taking are merged into the parsed result; optional EN to AR translation" src="images/pipeline-light.svg">
+  </picture>
+</p>
 
 1. **Decode.** Any format FFmpeg reads is converted to 16 kHz mono. One temporary
    WAV is written for the audio LLM, which reads from a path. The same samples are kept
@@ -115,3 +95,5 @@ flowchart TD
 
 On the WebSocket, the same errors are sent as `{"type": "error", "status": <code>, "detail": ...}`
 and then the socket is closed.
+
+Diagram sources live in [`docs/diagrams/`](diagrams/); re-render them with `make diagrams`.

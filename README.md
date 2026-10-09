@@ -54,20 +54,12 @@ The language model describes; the measurements anchor it:
 
 See [docs/architecture.md](docs/architecture.md) for the full pipeline.
 
-```mermaid
-flowchart LR
-    A[Audio] --> B[16 kHz mono]
-    B --> C[pyannote<br/>diarization]
-    B --> D[librosa<br/>acoustics]
-    C --> E[Voxtral-Mini-3B<br/>audio + prompt → JSON]
-    C --> F[turn-taking]
-    E --> G[merge + normalise]
-    D --> G
-    F --> G
-    G --> H{Arabic?}
-    H -->|glossary + Qwen3-4B| I["{EN, AR}"]
-    H -->|no| J[EN]
-```
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/overview-dark.svg">
+    <img alt="Pipeline: the 16 kHz audio goes straight to Voxtral-Mini-3B; pyannote diarization adds speaker context to the prompt and drives turn-taking metrics; librosa measures acoustics; results are merged and optionally translated to Arabic" src="docs/images/overview-light.svg">
+  </picture>
+</p>
 
 ## Quick start
 

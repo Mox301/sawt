@@ -38,6 +38,15 @@ up-cpu:  ## Docker, CPU only (slow); translation via Ollama on the host
 down:  ## Stop the Docker stack
 	docker compose down
 
+# ---------------------------------------------------------------- docs
+MMDC = npx -y -p @mermaid-js/mermaid-cli@11 mmdc -q
+
+diagrams:  ## Re-render docs/images/*.svg from docs/diagrams/*.mmd (needs Node.js)
+	@for d in overview system pipeline; do \
+	  $(MMDC) -c docs/diagrams/theme-light.json -b '#FFFFFF' -i docs/diagrams/$$d.mmd -o docs/images/$$d-light.svg; \
+	  $(MMDC) -c docs/diagrams/theme-dark.json -b '#0D1117' -i docs/diagrams/$$d.mmd -o docs/images/$$d-dark.svg; \
+	done
+
 # ---------------------------------------------------------------- quality
 test:  ## Run all tests (no models needed)
 	uv run --project backend pytest backend/tests -q
@@ -53,4 +62,4 @@ format:  ## Auto-format
 	uv run --project frontend ruff format frontend && uv run --project frontend ruff check --fix frontend
 	uv run --project backend ruff format examples && uv run --project backend ruff check --fix examples
 
-.PHONY: help setup models api ui dev-mac up up-cpu down test lint format
+.PHONY: help setup models api ui dev-mac up up-cpu down diagrams test lint format

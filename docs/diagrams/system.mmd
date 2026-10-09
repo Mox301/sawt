@@ -1,0 +1,17 @@
+flowchart TB
+    UI["Streamlit UI<br/>frontend/"] -- "POST /api/v1/conversations/analyze" --> R
+    WS["WebSocket client<br/>examples/stream_client.py"] -- "WS /api/v1/conversations/stream" --> R
+    subgraph API["FastAPI backend · backend/"]
+        direction TB
+        R["api/<br/>routes · schemas · errors"] --> S["services/<br/>use cases"]
+        S --> D["domain/<br/>pure analysis logic"]
+        S --> P["ML ports<br/>AudioLLM · TextLLM · Diarizer"]
+        I["infrastructure/ml<br/>model adapters"] -. "implements" .-> P
+    end
+    I --> M
+    subgraph M["Models"]
+        direction LR
+        V["Voxtral-Mini-3B"]
+        PY["pyannote<br/>community-1"]
+        Q["Qwen3-4B<br/>transformers or Ollama"]
+    end

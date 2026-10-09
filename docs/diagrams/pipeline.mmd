@@ -1,0 +1,16 @@
+flowchart TD
+    A["Upload: any FFmpeg-readable audio"] --> B["Decode to 16 kHz mono<br/>infrastructure/audio_io.py"]
+    B --> C["Speaker diarization<br/>pyannote community-1"]
+    B --> D["Acoustic features<br/>librosa: pitch, energy, spectrum, onsets, pauses"]
+    C -. "speaker count and split" .-> P["Prompt<br/>prompts/conversation.py"]
+    B == "audio" ==> F["Voxtral-Mini-3B<br/>audio + prompt → JSON<br/>conversation · speakers<br/>prosody · interaction"]
+    P --> F
+    F --> G["Parse and normalise<br/>domain/parsing.py"]
+    C --> T["Turn-taking metrics<br/>domain/turn_taking.py"]
+    D --> H["Merge measurements<br/>domain/prosody.py"]
+    G --> H
+    T --> H
+    H --> J{"translate?"}
+    J -- "no" --> K["Result"]
+    J -- "yes" --> L["EN → AR: glossary for labels,<br/>Qwen3-4B for free text"]
+    L --> M["Result in English and Arabic"]

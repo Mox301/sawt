@@ -1,7 +1,8 @@
 # Sawt API. Build from the repository root:  docker build -f backend/Dockerfile .
-# One image for every machine: PyPI's torch wheels include CUDA on linux/amd64 and run on
-# CPU anywhere (including linux/arm64 on Apple Silicon). Model weights are NOT baked in;
-# they live in the HF cache volume mounted at /models.
+# One image for every machine: PyPI's torch wheels include CUDA on linux/amd64 and are
+# CPU-only on linux/arm64 (Apple Silicon, ARM servers). torchcodec has no linux/arm64
+# wheel and is skipped there; Sawt does not use it (see pyproject.toml). Model weights
+# are NOT baked in; they live in the HF cache volume mounted at /models.
 FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \

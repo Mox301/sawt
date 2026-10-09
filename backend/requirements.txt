@@ -470,7 +470,7 @@ torchaudio==2.9.1
     #   sawt-backend
     #   torch-audiomentations
     #   torch-pitch-shift
-torchcodec==0.8.1
+torchcodec==0.8.1 ; platform_machine != 'aarch64' or sys_platform != 'linux'
     # via
     #   pyannote-audio
     #   sawt-backend

@@ -26,3 +26,6 @@ models/
 .DS_Store
 .idea/
 .vscode/
+
+# Claude Code local state (worktrees, settings)
+.claude/

@@ -2,7 +2,7 @@
 
 Usage: ``python -m backend.infrastructure.ml.download`` (``make models``).
 The diarization model is gated: accept its terms on huggingface.co and log in
-(``hf auth login``) or set ``HF_TOKEN`` first.
+(``hf auth login``) or set ``HF_TOKEN`` (environment or ``.env``) first.
 """
 
 from huggingface_hub import snapshot_download
@@ -21,7 +21,7 @@ def main() -> None:
     for repo in repos:
         print(f"Downloading {repo} …", flush=True)
         # Voxtral also ships Mistral-native weights (consolidated.safetensors, ~9 GB) that transformers doesn't use.
-        snapshot_download(repo, ignore_patterns=["consolidated.*"])
+        snapshot_download(repo, ignore_patterns=["consolidated.*"], token=s.hf_token)
 
     if s.translation_backend == "ollama":
         print(f"Translation runs on Ollama; pull the model with:  ollama pull {s.ollama_model}")

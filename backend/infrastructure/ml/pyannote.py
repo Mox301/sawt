@@ -1,7 +1,6 @@
 """pyannote speaker-diarization adapter (``Diarizer``)."""
 
 import logging
-import os
 
 import numpy as np
 import torch
@@ -13,8 +12,9 @@ logger = logging.getLogger(__name__)
 
 
 class PyannoteDiarizer:
-    def __init__(self, model_id: str, device: str):
-        self.pipeline = Pipeline.from_pretrained(model_id, token=os.getenv("HF_TOKEN"))
+    def __init__(self, model_id: str, device: str, token: str | None = None):
+        # token=None lets huggingface_hub use the token stored by `hf auth login`.
+        self.pipeline = Pipeline.from_pretrained(model_id, token=token)
         if self.pipeline is None:
             raise RuntimeError(f"Could not load {model_id}; accept its terms on Hugging Face and log in")
         self.pipeline.to(torch.device(device))

@@ -3,6 +3,7 @@
 from functools import lru_cache
 from typing import Literal
 
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 Device = Literal["auto", "cuda", "mps", "cpu"]
@@ -11,7 +12,12 @@ TranslationBackend = Literal["transformers", "ollama", "off"]
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="SAWT_", env_file=".env", extra="ignore")
+    # Empty values (``HF_TOKEN=`` in .env.example) fall back to the defaults.
+    model_config = SettingsConfigDict(env_prefix="SAWT_", env_file=".env", extra="ignore", env_ignore_empty=True)
+
+    # Hugging Face token for the gated diarization model (unprefixed ``HF_TOKEN``).
+    # None falls back to the token stored by ``hf auth login``.
+    hf_token: str | None = Field(default=None, validation_alias="HF_TOKEN", repr=False)
 
     # Inference hardware
     device: Device = "auto"

@@ -65,7 +65,7 @@ class ModelRegistry:
         def load_pyannote():
             from backend.infrastructure.ml.pyannote import PyannoteDiarizer
 
-            self.diarizer = PyannoteDiarizer(s.diarization_model, self.device)
+            self.diarizer = PyannoteDiarizer(s.diarization_model, self.device, s.hf_token)
 
         def load_translation():
             if s.translation_backend == "ollama":

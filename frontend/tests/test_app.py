@@ -129,8 +129,8 @@ def test_pending_analysis_survives_a_language_switch(monkeypatch, make_response,
         at.button(key="analyze").click().run()
         assert at.button(key="analyze").disabled
         # A daemon thread, so stopping the UI does not wait for the request.
-        (worker,) = [thread for thread in threading.enumerate() if thread.name == "sawt-analysis"]
-        assert worker.daemon
+        workers = [thread for thread in threading.enumerate() if thread.name == "sawt-analysis"]
+        assert workers and all(thread.daemon for thread in workers)
         at.radio(key="lang").set_value("EN").run()
 
         assert not at.exception

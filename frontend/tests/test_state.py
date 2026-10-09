@@ -1,3 +1,4 @@
+from collections import UserDict
 from concurrent.futures import Future
 from typing import Any
 
@@ -6,12 +7,12 @@ import pytest
 from frontend.core import state
 
 
-class _RecordingState(dict):
-    """A session state that records the order of its writes."""
+class _RecordingState(UserDict):
+    """A session state that records the order of its writes (``update`` included, as in Streamlit)."""
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
+    def __init__(self) -> None:
         self.writes: list[str] = []
+        super().__init__()
 
     def __setitem__(self, key: str, value: Any) -> None:
         self.writes.append(key)

@@ -1,0 +1,12 @@
+# CPU-only override (no GPU needed; expect minutes per clip).
+# Translation runs on Ollama on the host by default: `ollama pull qwen3:4b-instruct-2507-q4_K_M`.
+# On Docker Desktop, give the VM at least 14 GB of memory.
+services:
+  api:
+    deploy: !reset {}
+    environment:
+      SAWT_DEVICE: cpu
+      SAWT_TRANSLATION_BACKEND: ${SAWT_TRANSLATION_BACKEND:-ollama}
+      SAWT_OLLAMA_URL: http://host.docker.internal:11434
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

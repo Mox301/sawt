@@ -1,0 +1,32 @@
+# Sawt API. Build from the repository root:  docker build -f backend/Dockerfile .
+# One image for every machine: PyPI's torch wheels include CUDA on linux/amd64 and run on
+# CPU anywhere (including linux/arm64 on Apple Silicon). Model weights are NOT baked in;
+# they live in the HF cache volume mounted at /models.
+FROM python:3.12-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    UV_PROJECT_ENVIRONMENT=/opt/venv \
+    HF_HOME=/models \
+    PATH=/opt/venv/bin:$PATH
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ffmpeg libsndfile1 \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=ghcr.io/astral-sh/uv:0.9.28 /uv /usr/local/bin/uv
+
+WORKDIR /srv
+COPY backend/pyproject.toml backend/uv.lock backend/
+RUN cd backend && uv sync --frozen --no-dev --extra ml
+
+COPY backend/ backend/
+RUN useradd --create-home --uid 1000 sawt && mkdir -p /models && chown sawt /models
+USER sawt
+
+EXPOSE 8000
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"
+CMD ["uvicorn", "backend.main:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000"]

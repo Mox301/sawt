@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+
+# Audio and model files never belong in git
+*.wav
+*.mp3
+*.m4a
+*.flac
+*.ogg
+*.safetensors
+*.bin
+*.ckpt
+models/
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/

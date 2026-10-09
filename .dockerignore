@@ -1,0 +1,16 @@
+**/.venv
+**/__pycache__
+**/.pytest_cache
+**/.ruff_cache
+**/tests
+.git
+.github
+.env
+.env.*
+docs
+examples
+*.wav
+*.mp3
+*.m4a
+*.flac
+*.ogg

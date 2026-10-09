@@ -1,0 +1,6 @@
+# Root config for files outside backend/ and frontend/ (each has its own in pyproject.toml).
+line-length = 120
+target-version = "py311"
+
+[lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]

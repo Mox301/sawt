@@ -5,6 +5,7 @@ from typing import Any
 
 API_URL: str = os.environ.get("SAWT_API_URL", "http://localhost:8000").rstrip("/")
 ANALYSIS_TIMEOUT_S = 3600
+ANALYSIS_POLL_S = 1.0
 HEALTH_TIMEOUT_S = 3
 HEALTH_CACHE_TTL_S = 10
 

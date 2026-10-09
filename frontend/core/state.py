@@ -1,5 +1,7 @@
-"""Per-session state: the latest result and the outcome of the last analysis run."""
+"""Per-session state: the latest result, the running analysis and the outcome of the last one."""
 
+import time
+from concurrent.futures import Future
 from dataclasses import dataclass
 from typing import Any
 
@@ -14,10 +16,23 @@ class Outcome:
     error: dict[str, Any] | None = None
 
 
+@dataclass(frozen=True)
+class Job:
+    """An analysis request running in a worker thread, kept here so it survives reruns."""
+
+    future: Future[dict[str, Any]]
+    file_name: str
+    started_s: float
+
+    @property
+    def elapsed_s(self) -> float:
+        return time.perf_counter() - self.started_s
+
+
 _DEFAULTS: dict[str, Any] = {
     "result": None,
     "file_name": None,
-    "analyzing": False,
+    "job": None,
     "outcome": None,
 }
 
@@ -27,22 +42,30 @@ def init() -> None:
         st.session_state.setdefault(key, value)
 
 
+def current_job() -> Job | None:
+    return st.session_state["job"]
+
+
 def is_analyzing() -> bool:
-    return st.session_state["analyzing"]
+    return current_job() is not None
 
 
-def start_analysis() -> None:
-    st.session_state["analyzing"] = True
+def start_analysis(future: Future[dict[str, Any]], file_name: str) -> None:
+    st.session_state["job"] = Job(future, file_name, time.perf_counter())
 
 
-def finish_analysis(response: dict[str, Any], file_name: str, elapsed_s: float) -> None:
-    """Store an API response (result or error dict) and end the analysis run."""
+def finish_analysis(job: Job) -> None:
+    """Store a finished job's API response (result or error dict) and clear the job."""
+    try:
+        response = job.future.result()
+    except Exception as exc:  # The client returns error dicts; this keeps a bug from wedging the session.
+        response = {"error": "Request Failed", "message": str(exc)}
     failed = "error" in response
     st.session_state.update(
-        analyzing=False,
+        job=None,
         result=None if failed else response,
-        file_name=None if failed else file_name,
-        outcome=Outcome(elapsed_s, response if failed else None),
+        file_name=None if failed else job.file_name,
+        outcome=Outcome(job.elapsed_s, response if failed else None),
     )
 
 

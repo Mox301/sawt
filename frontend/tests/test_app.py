@@ -1,5 +1,6 @@
 """Smoke tests: run the real Streamlit script headlessly with the HTTP layer faked."""
 
+import threading
 from pathlib import Path
 from typing import Any
 
@@ -110,6 +111,62 @@ def test_outcome_messages_survive_the_rerun(monkeypatch, make_response):
     (message,) = [e.value for e in at.error]
     assert message.startswith(t("error", "EN").format("Could not decode audio"))
     assert "Technical details: HTTP 422" in message
+
+
+def test_pending_analysis_survives_a_language_switch(monkeypatch, make_response, bilingual_response):
+    release, posts = threading.Event(), []
+
+    def slow_post(url: str, **kwargs: Any) -> requests.Response:
+        posts.append(url)
+        release.wait(timeout=10)
+        return make_response(200, bilingual_response)
+
+    monkeypatch.setattr(requests, "post", slow_post)
+    at = _app(monkeypatch, make_response)
+    at.run()
+    at.file_uploader(key="audio").set_value(("call.wav", b"RIFF", "audio/wav")).run()
+    try:
+        at.button(key="analyze").click().run()
+        assert at.button(key="analyze").disabled
+        at.radio(key="lang").set_value("EN").run()
+
+        assert not at.exception
+        assert at.button(key="analyze").disabled
+        (status,) = at.status
+        assert status.state == "running"
+        assert status.label.startswith(t("analyzing", "EN"))
+    finally:
+        release.set()
+
+    at.session_state["job"].future.result(timeout=10)
+    at.run()
+
+    assert not at.exception
+    assert len(posts) == 1
+    assert not at.status
+    assert t("success", "EN").split("{}")[0] in _text(at.success)
+    assert at.session_state["result"] == bilingual_response
+    assert at.session_state["file_name"] == "call.wav"
+    assert not at.button(key="analyze").disabled
+
+
+def test_a_failing_job_ends_with_an_error(monkeypatch, make_response):
+    def broken_post(url: str, **kwargs: Any) -> requests.Response:
+        raise RuntimeError("boom")
+
+    monkeypatch.setattr(requests, "post", broken_post)
+    at = _app(monkeypatch, make_response)
+    at.session_state["lang"] = "EN"
+    at.run()
+    at.file_uploader(key="audio").set_value(("call.wav", b"RIFF", "audio/wav")).run()
+    at.button(key="analyze").click().run()
+    at.session_state["job"].future.exception(timeout=10)
+    at.run()
+
+    assert not at.exception
+    assert at.session_state["job"] is None
+    assert t("error", "EN").format("boom") in _text(at.error)
+    assert not at.button(key="analyze").disabled
 
 
 def test_models_loading_notice(monkeypatch, make_response):

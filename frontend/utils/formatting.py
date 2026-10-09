@@ -35,6 +35,8 @@ def format_text_with_speakers(text: str, lang: Lang = "EN") -> str:
 
 def format_time(seconds: float, lang: Lang = "EN") -> str:
     """Human-readable duration, e.g. ``4.2s``, ``12.5 seconds``, ``3m 7.0s``, ``1h 5m``."""
+    # Round first so the thresholds see the displayed value (119.97 → "2m", not "1m 60.0s").
+    seconds = round(seconds, 1)
     if seconds == 0:
         return "0s" if lang == "EN" else "٠ث"
 
